@@ -12,7 +12,7 @@ private:
 	int date;    // 날짜
 	int day;     // 요일
 	int range;  // 1월1일부터 며칠 
-	vector<Schedule> schedules;
+	
 
 	// String data for year - month - day
 	// For example, year should be 2020, and month should be 01~ 12, day should be 01 ~ 31
@@ -21,6 +21,7 @@ private:
 	string str_day = "";
 
 public:
+	vector<Schedule> schedules;
 	Date();
 	Date(int date, int day, int range);
 	int getDate();

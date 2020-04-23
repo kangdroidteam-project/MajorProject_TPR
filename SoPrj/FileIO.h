@@ -1,4 +1,5 @@
 #include <fstream>
+#include <cstdio>
 #include "Date.h"
 
 using namespace std;

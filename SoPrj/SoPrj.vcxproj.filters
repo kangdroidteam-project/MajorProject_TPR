@@ -18,9 +18,6 @@
     <ClInclude Include="Date.h">
       <Filter>소스 파일</Filter>
     </ClInclude>
-    <ClInclude Include="Error.h">
-      <Filter>소스 파일</Filter>
-    </ClInclude>
     <ClInclude Include="FileIO.h">
       <Filter>소스 파일</Filter>
     </ClInclude>
@@ -33,9 +30,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Date.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="Error.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="FileIO.cpp">

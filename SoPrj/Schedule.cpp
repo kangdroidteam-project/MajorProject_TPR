@@ -5,7 +5,7 @@ Schedule::Schedule()
 {
 }
 
-Schedule::Schedule(string content, string keyowrd)
+Schedule::Schedule(string content, string keyword)
     :content(content), keyword(keyword)
 {
 }

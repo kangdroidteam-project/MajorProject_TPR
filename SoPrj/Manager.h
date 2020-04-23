@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <string>
+#include <fstream>
 #include "Date.h"
 #include "FileIO.h"
 #include <algorithm>
