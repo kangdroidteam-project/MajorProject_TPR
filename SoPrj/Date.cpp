@@ -111,10 +111,18 @@ void  Date::editSch(int number, string content, string keyword){
     schedules.erase(it);
     this->addSch(content,keyword);
 }
-void  Date::deleteSch(int* num, int len){	
+void  Date::deleteSch(vector<int>&tmp){	
     // manager 에서 >>>큰 수부터 정렬된 <<< int 배열 (num) 넘김
+    vector<Schedule>::iterator it;
+    for (int i = 0; i < tmp.size(); i++) {
+        it=this->schedules.begin();
+        for (int a = 0; a < tmp.at(i)-1; a++) {
+            it++;
+        }
+        schedules.erase(it);
+    }
 
-    int trash = 0;
+    /*int trash = 0;
     vector<Schedule>::iterator it;
     for (int i = 0; i < len; i++) {
         it = this->schedules.begin();
@@ -125,7 +133,7 @@ void  Date::deleteSch(int* num, int len){
         if (trash == num[i])continue;
         trash = num[i];
         schedules.erase(it);
-    }
+    }*/
 }
 
 int Date::getDate() {

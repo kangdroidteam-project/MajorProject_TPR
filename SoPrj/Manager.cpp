@@ -930,8 +930,11 @@ void Manager::deleteSchedule() {
     year[c].showSch("day");
 
     string sdnum;  //삭제할 일정 번호
-    int* dnum = nullptr;
-    int len = 0;
+    //int* dnum = nullptr;
+    //int len = 0;
+    int* tmp_array_sortable = nullptr;
+    vector<int> tmp_vararr;
+    int idx_pointer = 0;
 
     count = 0;
 
@@ -949,145 +952,33 @@ void Manager::deleteSchedule() {
         cout << "Enter index number of desired schedule.(To remove multiple schedules, use space to specify. ex. 1 7 3)>";
 
         getline(cin, sdnum);
+        
+        tmp_array_sortable = new int[sdnum.length()];
+        idx_pointer = 0;
 
-        if(sdnum.length()==0){
-            cout << "Invalid number format(ex. prefix 0) entered. ";
-            custom_pause("Please enter again.");
-            continue;
+        bool isParsed = parseString(tmp_array_sortable, idx_pointer, sdnum, c);
+        if (!isParsed) {
+            cout << "Cannot parsed" << endl;
+            continue; // can't parse.
         }
+        // Sort it
+        sort(tmp_array_sortable, tmp_array_sortable + idx_pointer, greater<int>());
 
-        for (int i = 0; i < sdnum.length(); i++) {
-            if (!(sdnum.at(i) == ' ' || isdigit(sdnum.at(i)))) {
-                cout << "Entered character rather than number and space. ";
-                custom_pause("Please enter again.");
-                flag = false;
-                break;
-            }
+        // Remove it
+        removeSame(tmp_array_sortable, idx_pointer, tmp_vararr);
+        delete[] tmp_array_sortable;
+
+        for (int i = 0; i < tmp_vararr.size(); i++) {
+            cout << tmp_vararr[i] << endl;
         }
-
-        if (flag) {
-            for (int i = 0; i < sdnum.length() - 1; i++) {
-                if (sdnum.at(i) == ' ' && sdnum.at(i + 1) == ' ') {
-                    cout << "consecutive specifier entered. ";
-                    custom_pause("Please enter again.");
-                    flag = false;
-                    break;
-                }
-            }
-        }
-
-        if (flag) {
-            int check_f = 0xffffff, check_l = 0, spacenum = 0; // 첫번째숫자인식, 마지막숫자인식, 띄어쓰기 개수
-
-            /*string tmp_str = "";
-            int tmp_idx_number = 0;
-            for (int i = 0; i < sdnum.length(); i++) {
-                if (sdnum.at(i) != ' ') {
-                    tmp_str += sdnum.at(i);
-                } else {
-                    tmp_idx_number = atoi(tmp_str.c_str());
-                    if (tmp_idx_number > year[c].getLength()) {
-                        // 어쨌든 인덱스 최대보다 넘어감
-                        flag = false;
-                        break;
-                    }
-                    tmp_str = ""; // all-used
-                    spacenum++;
-                }
-            }*/
-
-            for (int i = 0; i < sdnum.length(); i++) {
-                if (sdnum.at(i) != ' ') {
-                    if (i < check_f)check_f = i;   //첫번째 숫자
-                    else if (i > check_l)check_l = i;  // 마지막 숫자
-                }
-
-            }
-            for (int i = check_f; i < check_l; i++)
-                if (sdnum.at(i) == ' ') spacenum++;
-
-            if (spacenum > 4) {
-                cout << "Available until 5 schedule numbers. ";
-                custom_pause("Please enter again. ");
-                flag = false;
-                continue;
-            }
-        }
-
-        if (flag) { // 띄어쓰기로 시작 & 끝 , 선행0
-            if (sdnum.length() > 1) {
-                if (sdnum.at(0) == '0' || sdnum.at(0) == ' ' || sdnum.at(sdnum.length() - 1) == ' ') {
-                    cout << "Invalid number format(ex. prefix 0) entered. ";
-                    custom_pause("Please enter again.");
-                    flag = false;
-                    continue;
-                }
-            }
-        }
-
-        if (flag) { // 띄어쓰기 한글자만 입력한 경우, 선행 0
-            if (sdnum.length() == 1 && sdnum.at(0) == ' ') {
-                cout << "Invalid number format(ex. prefix 0) entered. ";
-                custom_pause("Please enter again.");
-                flag = false;
-                continue;
-            }
-        }
-
-        if (flag) {
-            for (int i = 0; i < sdnum.length(); i++) {
-                if (sdnum.at(i) == ' ')len++;
-            }
-            len += 1;
-            dnum = new int[len];
-            int cnt = 0;
-            string tmp = "";
-
-            for (int i = 0; i < sdnum.length(); i++) {
-                if (sdnum.at(i) != ' ') {
-                    tmp += sdnum.at(i);
-                }
-                else {
-                    int t = atoi(tmp.c_str());
-                    dnum[cnt] = t;
-                    cnt++;
-                    tmp = "";
-                }
-            }
-
-            int t = atoi(tmp.c_str());
-            dnum[cnt] = t;
-            //dnum[cnt] = sdnum.at(sdnum.length() - 1) - '0';
-
-            sort(dnum, dnum + len, greater<int>());
-        }
-
-        if (flag) {
-            if (dnum[0] > 20 || dnum[len-1] < 1) {
-                cout << "Entered schedule number out of range of: 1 ~20. ";
-                custom_pause("Please enter again.");
-                flag = false;
-                continue;
-            }
-            
-        }
-
-        if (flag) {
-            if (dnum[0] > year[c].getLength()) {
-                cout << "Selected schedule does not exist. ";
-                custom_pause("Please enter again.");
-                flag = false;
-                continue;
-            }
-        }
-        if (flag)break;
+        break;
     }
         
-    year[c].deleteSch(dnum, len);
+    year[c].deleteSch(tmp_vararr);
 
     cout << "Schedule successfully deleted. \n";
     custom_pause("Press any key to return to the main menu.\nPress any key to continue..");
-    delete[] dnum;
+    //delete[] dnum;
 }
 
 void Manager::custom_pause(const string& str) {
@@ -1105,4 +996,127 @@ void Manager::callSave() {
 
 void Manager::callLoad() {
     fio.load(this->year);
+}
+
+bool Manager::parseString(int* tmp, int& array_idx_pointer, string& input, int year_idx) {
+    input += " "; // Add another space
+    string tmp_flusher = "";
+    array_idx_pointer = 0;
+    bool ret_val = false;
+    if (input.length() < 1) {
+        // less than 1
+        return false;
+    } else {
+        if (input.at(0) == '0' || input.at(0) == ' ' || input.at(input.length() - 2) == ' ') {
+            cout << "Invalid number format(ex. prefix 0) entered. ";
+            custom_pause("Please enter again.");
+            return false;
+        }
+
+        if (input.length() == 1 && input.at(0) == ' ') {
+            cout << "Invalid number format(ex. prefix 0) entered. ";
+            custom_pause("Please enter again.");
+            return false;
+        }
+    }
+    for (int i = 0; i < input.length(); i++) {
+        if (input.at(i) != ' ') {
+            // 숫자와 띄어쓰기가 아닌 문자가 있는가
+            if (!(isdigit(input.at(i)))) {
+                // 숫자도 아니면서, 띄어쓰기도 아님
+                cout << "Entered character rather than number and space. ";
+                custom_pause("Please enter again.");
+                ret_val = false;
+                break;
+            } else {
+                tmp_flusher += input.at(i);
+            }
+            
+        } else if (input.at(i) == ' ') {
+            // 구분자를 연속으로 입력했는가
+            if (i < input.length() - 1) {
+                if (input.at(i + 1) == ' ') {
+                    // 연속 스페이스(구분자 연속 입력)
+                    cout << "consecutive specifier entered. ";
+                    custom_pause("Please enter again.");
+                    ret_val = false;
+                    break;
+                }
+            }
+            if (tmp_flusher.length() > 0) {
+                if (tmp_flusher.at(0) == '0') {
+                    // 지원하지 않는 형식(선행 0)
+                    cout << "Invalid number format(ex. prefix 0) entered. ";
+                    custom_pause("Please enter again.");
+                    ret_val = false;
+                    break;
+                }
+            }
+            
+            int tmp_value_atoi = atoi(tmp_flusher.c_str());
+            if (tmp_value_atoi <= 20) {
+                if (tmp_value_atoi > year[year_idx].getLength()) {
+                    // 존재하지 않는 일정
+                    cout << "Selected schedule does not exist. " << tmp_value_atoi;
+                    custom_pause("Please enter again.");
+                    
+                    ret_val = false;
+                    break;
+                }
+            } else {
+                // 범위를 벗어난 숫자 입력
+                cout << "Entered schedule number out of range of: 1 ~20. ";
+                custom_pause("Please enter again.");
+                ret_val = false;
+                break;
+            }
+            tmp[array_idx_pointer++] = tmp_value_atoi;
+            tmp_flusher = "";
+        }
+        ret_val = true;
+    }
+
+    if (!ret_val) {
+        return false;
+    }
+
+    // 일정 번호가 5개를 초과했는가
+    if (array_idx_pointer > 5) {
+        cout << "Available until 5 schedule numbers. ";
+        custom_pause("Please enter again. ");
+        return false;
+    }
+
+    return ret_val;
+}
+
+void Manager::removeSame(int* arr, int& idx, vector<int>&tmp) {
+    for (int i = 0; i < idx; i++) {
+        if (isHas(tmp, arr[i])) {
+            // Not exists.
+            tmp.push_back(arr[i]);
+        }
+    }
+    // Delete array, and create new one.
+    /*delete[] arr;
+    idx = tmp.size();
+    arr = new int[tmp.size()];
+
+    for (int i = 0; i < idx; i++) {
+        arr[i] = tmp.at(i);
+    }*/
+}
+
+bool Manager::isHas(vector<int>& tmpVector, int target) {
+    if (tmpVector.size() == 0) {
+        return true;
+    } else {
+        for (int i = 0; i < tmpVector.size(); i++) {
+            if (target == tmpVector.at(i)) {
+                // Same thing exists.
+                return false;
+            }
+        }
+    }
+    return true;
 }

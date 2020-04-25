@@ -36,7 +36,7 @@ public:
 	void showSch(string specifier);
 	void addSch(string content, string keyword);
 	void editSch(int number, string content, string keyword);
-	void deleteSch(int* num, int len);
+	void deleteSch(vector<int>&tmp);
 	string getDayNormFormat();
 
 	int getLength();
