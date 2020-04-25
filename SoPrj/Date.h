@@ -40,5 +40,6 @@ public:
 	string getDayNormFormat();
 
 	int getLength();
+    void setColor(int color);
 
 };

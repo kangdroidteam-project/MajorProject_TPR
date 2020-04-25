@@ -1,6 +1,7 @@
 #include "Date.h"
 #include <iostream>
 #include <cstring>
+#include <Windows.h>
 
 Date::Date() {
     Date(0,0,0);
@@ -29,6 +30,9 @@ void Date::parseDate() {
     
 void  Date::showSch(string specifier){
     cout << endl;
+    if(this->day == 1){
+        setColor(12);
+    }
     if (specifier == "month") {
         // Keyword
         string week;
@@ -43,7 +47,7 @@ void  Date::showSch(string specifier){
         case 7: week = "SAT"; break;
         }
         cout << "(" << week << ") ";
-
+        setColor(15);
         for (int i = 0; i < schedules.size(); i++) {
             cout << schedules.at(i).getKeyword();
             if (schedules.size() != 1 && i < schedules.size() - 2)cout << " / ";
@@ -63,7 +67,7 @@ void  Date::showSch(string specifier){
             case 7: week = "SAT"; 
         }
         cout << " ("<<week<<") ";
-        
+        setColor(15);
         for (int i = 0; i < schedules.size(); i++) {
             cout << schedules.at(i).getKeyword();
             if (schedules.size() != 1 && i < schedules.size() - 2)cout << " / ";	
@@ -81,8 +85,10 @@ void  Date::showSch(string specifier){
             case 5: week = "THU"; break;
             case 6: week = "FRI"; break;
             case 7: week = "SAT"; 
-        }
+        }        
         cout << "("<<week<<") ";
+        setColor(15);
+        cout << endl;
         for (int i = 0; i < schedules.size(); i++) {
             cout << i+1 <<". ";
             cout << schedules.at(i).getContent() << endl;
@@ -91,22 +97,33 @@ void  Date::showSch(string specifier){
     else {
         // Something else entered --> Error
     }
-    cout << endl << endl;
+    
 }
 void  Date::addSch(string content, string keyword){
     this->schedules.push_back(Schedule(content, keyword));
 }
 void  Date::editSch(int number, string content, string keyword){
     vector<Schedule>::iterator it=this->schedules.begin();
-    it=it+(number-1);		//실행시켜보자 ~^^
+    //it=it+(number-1);		//실행시켜보자 ~^^
+    for(int i=0; i<number-1; i++){
+        it++;
+    }
     schedules.erase(it);
     this->addSch(content,keyword);
 }
 void  Date::deleteSch(int* num, int len){	
     // manager 에서 >>>큰 수부터 정렬된 <<< int 배열 (num) 넘김
-    vector<Schedule>::iterator it = this->schedules.begin();
+
+    int trash = 0;
+    vector<Schedule>::iterator it;
     for (int i = 0; i < len; i++) {
-        it = it + num[i] - 1;
+        it = this->schedules.begin();
+        for(int j=0;j<num[i]-1;j++){
+            it++;
+        }
+    //it = it + num[i] - 1;
+        if (trash == num[i])continue;
+        trash = num[i];
         schedules.erase(it);
     }
 }
@@ -166,3 +183,9 @@ string Date::getDayNormFormat() {
     }
     return tmp;
 }
+
+void Date::setColor(int color){
+    CONSOLE_SCREEN_BUFFER_INFO info;
+    GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &info);
+    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), (info.wAttributes&0xf0) | (color&0xf));
+} 

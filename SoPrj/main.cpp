@@ -18,6 +18,7 @@ int main(void) {
     Manager manager;
     string menu;
     while (true) {
+        cout << endl;
         cout << "(1) Show Schedule\n";
         cout << "(2) Add Schedule\n";
         cout << "(3) Edit Schedule\n";
@@ -39,7 +40,7 @@ int main(void) {
             // Only number are allowed
             cout << "Only numbers are allowed. Please enter again." << endl; 
             continue;
-        } else if (menu.at(0) < '1' || menu.at(0) > '5') {
+        } else if (menu.at(0) < '1' || menu.at(0) > '6') {
             // Number out of range
             cout << "Argument out of range. Please enter again." << endl;
             continue;
@@ -55,6 +56,8 @@ int main(void) {
             // exit
             manager.callSave();
             exit(0);
+        } else if (menu.at(0) == '6') {
+            manager.callLoad();
         }
     }
     return 0;
