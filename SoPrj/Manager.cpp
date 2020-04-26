@@ -266,8 +266,6 @@ void Manager::addSchedule() {
     string scope, sch, key;
     bool flag = true;
 
-    string y = "", d = "", m = "";
-
     while (true) { //날짜 입력
         count++;
 
@@ -282,15 +280,7 @@ void Manager::addSchedule() {
         getline(cin, scope);
         //const char* tmp = scope.c_str();
 
-        if (flag) {
-            if (scope.length() != 8) {
-                cout << "Only 8 digit date-form are allowed. ";
-                custom_pause("Please enter again.");
-                flag = false;
-                continue;
-            }
-        }
-
+        string y = "", d = "", m = "";
         for (int i = 0; i < scope.length(); i++) {
             if (i < 4) {
                 y += scope.at(i);
@@ -330,6 +320,15 @@ void Manager::addSchedule() {
                     flag = false;
                     break;
                 }
+        }
+
+        if (flag) {
+            if (scope.length() != 8) {
+                cout << "Only 8 digit date-form are allowed. ";
+                custom_pause("Please enter again.");
+                flag = false;
+                continue;
+            }
         }
 
         if (flag) {
