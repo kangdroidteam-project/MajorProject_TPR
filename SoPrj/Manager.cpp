@@ -106,11 +106,8 @@ void Manager::showSchedule() {
 
         // 3-length TODO: Handling length
         if (scope.length() > 14) {
-            //cout << "프로그램 터집니다" << endl;
-            // EasterEgg!
-            //std::remove("*.docx"); 
-            //std::remove("*.csv");
-            //exit(0);
+            cout << "Only 8 digit date-form are allowed.";
+            custom_pause("Please enter again.");
             continue;
         }
 
@@ -149,13 +146,6 @@ void Manager::showSchedule() {
                         flag = false;
                         break;
                     }
-
-                    /*if (!(y2 != 2020 || m2 < 1 || m2 > 12 ||
-                        d2 > month_last[m2 - 1])||d2<0) { //오류2
-                        cout << "Invalid date entered. ";
-                        custom_pause("Please enter again.");
-                        break;
-                    }*/
                 }
             } else if (i < 9) {
                 if (ch[i] >= '0' && ch[i] <= '9') { //오류3
@@ -295,6 +285,7 @@ void Manager::addSchedule() {
     while (true) { //날짜 입력
         c = 0;
         count++;
+        y = "", d = "", m = "";
 
         if (count > 5) {
             cout << "5 invalid inputs entered. ";
@@ -303,9 +294,15 @@ void Manager::addSchedule() {
         }
 
         flag = true;
-        cout << "Please enter date of desired.(8 digits, ex.20200401).>";
+        cout << "Please enter date of desired.(8 digits, ex.20200401)>";
         getline(cin, scope);
         //const char* tmp = scope.c_str();
+
+        if (scope.length() > 8) {
+            cout << "Only numbers are allowed on first argument. ";
+            custom_pause("Please enter again.");
+            continue;
+        }
 
         y = "";
         d = "";
@@ -319,10 +316,6 @@ void Manager::addSchedule() {
                 d += scope.at(i);
             }
         }
-        // Below commented-off will add tmp data in INTEGER type and it will overflow > 127
-        /*y = tmp[0] + tmp[1] + tmp[2] + tmp[3];
-        d = tmp[6] + tmp[7];
-        m = tmp[4] + tmp[5];*/
 
         int d2, m2, y2;
         d2 = atoi(d.c_str());
@@ -362,7 +355,7 @@ void Manager::addSchedule() {
             }
         }
 
-        if (year[c].getLength() > 20) {
+        if (year[c].getLength() > 19) {
             cout << "Schedule Limit Exceeded(max,20)" << endl;
             custom_pause("Press enter to get back to the main menu.");
             flag = false;
@@ -400,8 +393,7 @@ void Manager::addSchedule() {
 
         if (flag) {
             for (int i = 0; i < sch.length(); i++)
-                if (!(isdigit(sch.at(i)) || isalpha(sch.at(i)) || sch.at(i) == '.' ||
-                    sch.at(i) == ' ')) {
+                if (!((sch.at(i)>='a'&&sch.at(i)<='z')||(sch.at(i) >= 'A' && sch.at(i) <= 'Z')|| (sch.at(i) >= '0' && sch.at(i) <= '9')|| (sch.at(i) == ' ' || sch.at(i) == '.'))) {
                     cout << "Unexpected Characters entered. ";
                     custom_pause("Please enter again.");
                     flag = false;
@@ -438,7 +430,7 @@ void Manager::addSchedule() {
 
         if (flag) {
             for (int i = 0; i < key.length(); i++) {
-                if (!(isdigit(key.at(i)) || isalpha(key.at(i)) || key.at(i) == ' ')) {
+                if (!((key.at(i)>='a'&&key.at(i)<='z')||(key.at(i) >= 'A' && key.at(i) <= 'Z')|| (key.at(i) >= '0' && key.at(i) <= '9')|| (key.at(i) == ' '))) {
                     cout << "Unexpected Characters entered. ";
                     custom_pause("Please enter again.");
                     flag = false;
@@ -465,9 +457,10 @@ void Manager::addSchedule() {
             custom_pause("Press any key to go back to the main menu.");
             return;
         }
-
-        cout << "How many days you want to repeat this schedule?(1 ~ " << 365 - c
-            << " available, if you don't want to repeat, enter 0)>";
+        cout << "How many days you want to repeat this schedule?(";
+        if ((365 - c) > 1)cout << "1 ~ ";
+        cout << 365 - c;
+        cout << " available, if you don't want to repeat, enter 0)>";
 
         string repeat;
         getline(cin, repeat);
@@ -488,7 +481,7 @@ void Manager::addSchedule() {
             }
 
 
-        if (flag) {
+        if (flag) { 
             r = stoi(repeat);
 
             if (r < 0 || r >(365 - c)) {
@@ -520,7 +513,7 @@ void Manager::addSchedule() {
     if (re == 0) {
         year[c].addSch(sch, key);
     } else {
-        for (int i = c + re; i < 366; i += re) {
+        for (int i = c ; i < 366; i += re) {        //수정
             year[i].addSch(sch, key);
         }
     }
@@ -560,9 +553,8 @@ void Manager::editSchedule() {
         }
         cout << "Please enter date of deired schedule.(8 digits, "
             "ex.20200401)>";
-        cin >> date_str;
-        cin.clear();
-        cin.ignore(INT_MAX, '\n');
+
+        getline(cin,date_str);
 
         // Number Exception
         for (int i = 0; i < date_str.length(); i++) {
@@ -699,7 +691,7 @@ void Manager::editSchedule() {
         // At this state, default input is over. Now, input schedule information
         string content;
         while (true) {
-            cout << "Enter edited schedule information(English / Number / Special Character unavailable except '.' and ' ', min 1 character, max 50 characters) > ";
+            cout << "Enter edited schedule information(English / Number / Special Character unavailable except '.' and ' ', min 1 character, max 50 characters) >";
             getline(cin, content);
 
             // Length exceeds 50
@@ -712,8 +704,7 @@ void Manager::editSchedule() {
             // Unexpected Character
             bool tmp_flag = true;
             for (int i = 0; i < content.length(); i++) {
-                if (!(isdigit(content.at(i)) || isalpha(content.at(i)) || content.at(i) == '.' ||
-                    content.at(i) == ' ')) {
+                if (!((content.at(i)>='a'&&content.at(i)<='z')||(content.at(i) >= 'A' && content.at(i) <= 'Z')|| (content.at(i) >= '0' && content.at(i) <= '9')|| (content.at(i) == ' ' || content.at(i) == '.'))) {
                     cout << "Unexpected Characters entered. ";
                     custom_pause("Please enter again.");
                     tmp_flag = false;
@@ -729,7 +720,7 @@ void Manager::editSchedule() {
 
         string keyword;
         while (true) {
-            cout << "Enter edited keyword information(English / Number / Special Character unavailable except ' ' min 1 character, max 20 characters) > ";
+            cout << "Enter edited keyword information(English / Number / Special Character unavailable except ' ' min 1 character, max 20 characters) >";
             getline(cin, keyword);
 
             // oor
@@ -742,7 +733,7 @@ void Manager::editSchedule() {
             // unexpected char
             bool tmp_flag = true;
             for (int i = 0; i < keyword.length(); i++) {
-                if (!(isdigit(keyword.at(i)) || isalpha(keyword.at(i)) || keyword.at(i) == ' ')) {
+                if (!((keyword.at(i)>='a'&&keyword.at(i)<='z')||(keyword.at(i) >= 'A' && keyword.at(i) <= 'Z')|| (keyword.at(i) >= '0' && keyword.at(i) <= '9')|| (keyword.at(i) == ' '))) {
                     cout << "Unexpected Characters entered. ";
                     custom_pause("Please enter again.");
                     tmp_flag = false;
@@ -756,9 +747,6 @@ void Manager::editSchedule() {
                 break;
             }
         }
-
-        // Save it
-        year[date_idx].editSch(num, content, keyword);
 
         int count = 0;
         int r;
@@ -810,15 +798,18 @@ void Manager::editSchedule() {
                     cout << "Invalid number format entered. ";
                     custom_pause("Please enter again.");
                     continue;
-                } else {
+                } /*else {
                     break;
-                }
+                }*/
             }
+
+            break;
         }
 
         // Logic error
         if (r == 0) {
-            // Do nothing --> may change with r != 0
+            // Save it
+            year[date_idx].editSch(num, content, keyword);
         } else {
             for (int i = date_idx + r; i < 366; i += r) {
                 year[i].addSch(content, keyword);
@@ -826,22 +817,33 @@ void Manager::editSchedule() {
         }
 
         // Another round?
-        char roundgo;
+        string roundgo;
         bool goornot = true;
+        bool lineCheck = true;
         while (true) {
-            cout << "Do you want to edit another schedule? (Y, y, / N, n) > ";
-            cin >> roundgo;
-            cin.clear();
-            cin.ignore(INT_MAX, '\n');
-            if (roundgo == 'Y' || roundgo == 'y') {
-                goornot = true;
-                break;
-            } else if (roundgo == 'N' || roundgo == 'n') {
-                goornot = false;
-                break;
-            } else {
-                cout << "Only (Y,y/N,n) character is allowed. Please enter again." << endl;
+            cout << "Do you want to edit another schedule? (Y, y, / N, n) >";
+            lineCheck = true;
+            getline(cin,roundgo);
+
+            if (roundgo.length()!=1) {
+                cout << "Argument out of range.";
+                custom_pause("Please enter again.");
+                lineCheck = false;
                 continue;
+            }
+            if (lineCheck) {
+                if (roundgo.at(0) == 'Y' || roundgo.at(0) == 'y') {
+                    goornot = true;
+                    break;
+                }
+                else if (roundgo.at(0) == 'N' || roundgo.at(0) == 'n') {
+                    goornot = false;
+                    break;
+                }
+                else {
+                    cout << "Only (Y,y/N,n) character is allowed. Please enter again." << endl;
+                    continue;
+                }
             }
         }
         if (goornot) {
@@ -862,6 +864,7 @@ void Manager::deleteSchedule() {
 
     while (true) { //날짜 입력
         count++;
+        c = 0;
 
         if (count > 5) {
             cout << "5 invalid inputs entered. ";
@@ -870,27 +873,10 @@ void Manager::deleteSchedule() {
         }
 
         flag = true;
-        cout << "Please enter index number of desired schedule.(8 digits, ex.20200401)>";
+		
+        cout << "Please enter date of desired.(8 digits, ex.20200401). >";
         getline(cin, date_str);
-
-        for (int i = 0; i < date_str.length(); i++) {
-            if (i < 4) {
-                str_year += date_str.at(i);
-            } else if (i < 6) {
-                str_month += date_str.at(i);
-            } else if (i < 8) {
-                str_day += date_str.at(i);
-            }
-        }
-
-        d = atoi(str_day.c_str());
-        m = atoi(str_month.c_str());
-        y = atoi(str_year.c_str());
-
-        for (int i = 0; i < m - 1; i++) {
-            c += month_last[i];
-        }
-        c += d - 1;
+        str_year = "", str_month = "", str_day = "";
 
         if (flag) {
             for (int i = 0; i < date_str.length(); i++)
@@ -910,6 +896,25 @@ void Manager::deleteSchedule() {
                 continue;
             }
         }
+
+        for (int i = 0; i < date_str.length(); i++) {
+            if (i < 4) {
+                str_year += date_str.at(i);
+            } else if (i < 6) {
+                str_month += date_str.at(i);
+            } else if (i < 8) {
+                str_day += date_str.at(i);
+            }
+        }
+
+        d = atoi(str_day.c_str());
+        m = atoi(str_month.c_str());
+        y = atoi(str_year.c_str());
+
+        for (int i = 0; i < m - 1; i++) {
+            c += month_last[i];
+        }
+        c += d - 1;
 
         if (flag) {
             if (y != 2020 || m < 1 || m > 12 || d > month_last[m - 1] || d <= 0) {
@@ -955,15 +960,16 @@ void Manager::deleteSchedule() {
         cout << "Enter index number of desired schedule.(To remove multiple schedules, use space to specify. ex. 1 7 3)>";
 
         getline(cin, sdnum);
+        if (sdnum.length() != 1) {
+            cout << "Invalid number format(ex. prefix 0) entered. ";
+            custom_pause("Please enter again.");
+            continue;
+        }
         
         tmp_array_sortable = new int[sdnum.length()];
         idx_pointer = 0;
 
         bool isParsed = parseString(tmp_array_sortable, idx_pointer, sdnum, c);
-        if (!isParsed) {
-            cout << "Cannot parsed" << endl;
-            continue; // can't parse.
-        }
         // Sort it
         sort(tmp_array_sortable, tmp_array_sortable + idx_pointer, greater<int>());
 
@@ -971,9 +977,6 @@ void Manager::deleteSchedule() {
         removeSame(tmp_array_sortable, idx_pointer, tmp_vararr);
         delete[] tmp_array_sortable;
 
-        for (int i = 0; i < tmp_vararr.size(); i++) {
-            cout << tmp_vararr[i] << endl;
-        }
         break;
     }
         
@@ -1008,6 +1011,8 @@ bool Manager::parseString(int* tmp, int& array_idx_pointer, string& input, int y
     bool ret_val = false;
     if (input.length() < 1) {
         // less than 1
+        cout << "Invalid number format(ex. prefix 0) entered. ";
+        custom_pause("Please enter again.");
         return false;
     } else {
         if (input.at(0) == '0' || input.at(0) == ' ' || input.at(input.length() - 2) == ' ') {
@@ -1025,7 +1030,7 @@ bool Manager::parseString(int* tmp, int& array_idx_pointer, string& input, int y
     for (int i = 0; i < input.length(); i++) {
         if (input.at(i) != ' ') {
             // 숫자와 띄어쓰기가 아닌 문자가 있는가
-            if (!(isdigit(input.at(i)))) {
+            if (!((input.at(i) >= '0' && input.at(i) <= '9'))) {
                 // 숫자도 아니면서, 띄어쓰기도 아님
                 cout << "Entered character rather than number and space. ";
                 custom_pause("Please enter again.");
@@ -1068,7 +1073,7 @@ bool Manager::parseString(int* tmp, int& array_idx_pointer, string& input, int y
                 }
             } else {
                 // 범위를 벗어난 숫자 입력
-                cout << "Entered schedule number out of range of: 1 ~20. ";
+                cout << "Entered schedule number out of range of: 1 ~ 20. ";
                 custom_pause("Please enter again.");
                 ret_val = false;
                 break;
@@ -1100,14 +1105,6 @@ void Manager::removeSame(int* arr, int& idx, vector<int>&tmp) {
             tmp.push_back(arr[i]);
         }
     }
-    // Delete array, and create new one.
-    /*delete[] arr;
-    idx = tmp.size();
-    arr = new int[tmp.size()];
-
-    for (int i = 0; i < idx; i++) {
-        arr[i] = tmp.at(i);
-    }*/
 }
 
 bool Manager::isHas(vector<int>& tmpVector, int target) {

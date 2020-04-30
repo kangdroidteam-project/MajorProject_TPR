@@ -50,7 +50,7 @@ void  Date::showSch(string specifier){
         setColor(15);
         for (int i = 0; i < schedules.size(); i++) {
             cout << schedules.at(i).getKeyword();
-            if (schedules.size() != 1 && i < schedules.size() - 2)cout << " / ";
+            if (i < schedules.size() - 1)cout << " / ";
         }
 
     }else if (specifier == "week") {
@@ -70,7 +70,7 @@ void  Date::showSch(string specifier){
         setColor(15);
         for (int i = 0; i < schedules.size(); i++) {
             cout << schedules.at(i).getKeyword();
-            if (schedules.size() != 1 && i < schedules.size() - 2)cout << " / ";	
+            if (i < schedules.size() - 1)cout << " / ";	
         }
     }
     else if (specifier == "day") {
@@ -100,7 +100,8 @@ void  Date::showSch(string specifier){
     
 }
 void  Date::addSch(string content, string keyword){
-    this->schedules.push_back(Schedule(content, keyword));
+    if(this->schedules.size() < 20)
+        this->schedules.push_back(Schedule(content, keyword));
 }
 void  Date::editSch(int number, string content, string keyword){
     vector<Schedule>::iterator it=this->schedules.begin();

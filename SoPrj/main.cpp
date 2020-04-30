@@ -26,11 +26,13 @@ int main(void) {
         cout << "(5) Exit Program\n";
         cout << "Enter Menu Number >";
 
-        cin >> menu;
-        cin.clear();
-        cin.ignore(INT_MAX, '\n');
-        if (menu.length() > 1) {
+        getline(cin, menu);
+
+        if(menu.length()<1){
+            cout<<"Only numbers are allowed. Please enter again."<<endl; continue;
+		}else if (menu.length() > 1) {
             // Re-Input --> NEED TO DISCUSS
+            cout << "Argument out of range. Please enter again." << endl;
             continue;
         } else if (menu.at(0) == '0' && hasNext(menu)) {
             // Prefix 0 detected.
