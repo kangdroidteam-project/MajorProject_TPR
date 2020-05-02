@@ -294,7 +294,7 @@ void Manager::addSchedule() {
         }
 
         flag = true;
-        cout << "Please enter date of desired.(8 digits, ex.20200401)>";
+        cout << "Please enter date of desired schedule.(8 digits, ex.20200401)>";
         getline(cin, scope);
         //const char* tmp = scope.c_str();
 
@@ -874,7 +874,7 @@ void Manager::deleteSchedule() {
 
         flag = true;
 		
-        cout << "Please enter date of desired.(8 digits, ex.20200401). >";
+        cout << "Please enter date of desired schedule.(8 digits, ex.20200401). >";
         getline(cin, date_str);
         str_year = "", str_month = "", str_day = "";
 
@@ -960,7 +960,7 @@ void Manager::deleteSchedule() {
         cout << "Enter index number of desired schedule.(To remove multiple schedules, use space to specify. ex. 1 7 3)>";
 
         getline(cin, sdnum);
-        if (sdnum.length() != 1) {
+        if (sdnum.length() != 14) {
             cout << "Invalid number format(ex. prefix 0) entered. ";
             custom_pause("Please enter again.");
             continue;
@@ -970,6 +970,9 @@ void Manager::deleteSchedule() {
         idx_pointer = 0;
 
         bool isParsed = parseString(tmp_array_sortable, idx_pointer, sdnum, c);
+        if (!isParsed) {
+            continue;
+        }
         // Sort it
         sort(tmp_array_sortable, tmp_array_sortable + idx_pointer, greater<int>());
 
