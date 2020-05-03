@@ -70,7 +70,7 @@ Manager::Manager() {
 void Manager::showSchedule() {
     int cnt = 0;
     string stday = "";
-    string stspecifier = "";
+    string scope_whatever;
     string y = "";
     string d = "";
     string m = "";
@@ -82,6 +82,7 @@ void Manager::showSchedule() {
         y = "";
         d = "";
         m = "";
+        scope_whatever = "";
         if (cnt > 5) {
             cout << "5 invalid inputs entered. ";
             custom_pause("Press any key to go back to the main menu.");
@@ -104,65 +105,88 @@ void Manager::showSchedule() {
 
         //메인메뉴로 돌아가는거 말고 다시 입력받는거! !continue
         const char* ch = scope.c_str();
+        string day_tmp_t = "";
+        int ctr = 0;
+	
+        for (int i = 0; i < scope.length(); i++) {
+            if (scope.at(i) == 32) {
+                ctr++;
+            }
+        }
 
-        for (int i = 0; i < strlen(ch); i++) {
-            if (i < 8) {
-                if (ch[i] >= '0' && ch[i] <= '9') {
-                    stday += ch[i];
-                } else { // 오류1 
+        if (ctr > 1 || ctr == 0) {
+            cout << "Space not entered or invailid specifier entered between ";
+            cout << "first argument and second argument.";
+            custom_pause("Please enter again.");
+
+            // Get out somehow
+            continue;
+        }
+        
+        // Get Date
+        for (int i = 0; i < scope.length(); i++) {
+            if (scope.at(i) != 32) {
+                // if at(i) neq integer
+                if (scope.at(i) < '0' || scope.at(i) > '9') {
                     cout << "Only numbers are allowed on first argument.";
                     custom_pause("Please enter again.");
                     flag = false;
                     break;
+                    // get out of whole loop.
+                } else {
+                    // it is integer, store it to tmp string
+                    day_tmp_t += scope.at(i);
                 }
-                if (i == 7) {
-                    for (int i = 0; i < scope.length(); i++) {
-                        if (i < 4) {
-                            y += scope.at(i);
-                        } else if (i < 6) {
-                            m += scope.at(i);
-                        } else {
-                            d += scope.at(i);
-                        }
-                    }
-
-                    d2 = atoi(d.c_str());
-                    m2 = atoi(m.c_str());
-                    y2 = atoi(y.c_str());
-
-                    if (y2 != 2020 || m2 < 1 || m2 > 12 || d2 > month_last[m2 - 1] || d2 <= 0) {
-                        cout << "Invalid date entered. ";
-                        custom_pause("Please enter again.");
-                        flag = false;
-                        break;
-                    }
-                }
-            } else if (i < 9) {
-                if (ch[i] >= '0' && ch[i] <= '9') { //오류3
-                    cout << "Only 8 digit date-form are allowed.";
+            } else if (scope.at(i) == 32) {
+                if (i + 1 < scope.length()) {
+                    // no specifier enetered.
+                    scope_whatever = scope.substr(i+1, scope.length());
+                } else {
+                    cout << "Invalid scope information entered." << endl;
                     custom_pause("Please enter again.");
                     flag = false;
-                    break;
-                } else if (ch[i] != ' ') { //오류4
-                    cout << "Space not entered or invailid specifier entered between ";
-                    cout << "first argument and second argument.";
-                    custom_pause("Please enter again.");
-                    flag = false;
-                    break;
                 }
-            } else {
-                stspecifier += ch[i];
+                break;
             }
-
         }
+
+        if (!flag) continue;
+
+        if (day_tmp_t.length() == 8) {
+            for (int i = 0; i < day_tmp_t.length(); i++) {
+                if (i < 4) {
+                    y += day_tmp_t.at(i);
+                } else if (i < 6) {
+                    m += day_tmp_t.at(i);
+                } else {
+                    d += day_tmp_t.at(i);
+                }
+            }
+            y2 = atoi(y.c_str());
+            m2 = atoi(m.c_str());
+            d2 = atoi(d.c_str());
+            if (y2 != 2020 || m2 < 1 || m2 > 12 || d2 > month_last[m2 - 1] || d2 <= 0) {
+                cout << "Invalid date entered. ";
+                custom_pause("Please enter again.");
+                flag = false;
+            }
+        } else {
+            // Not 8 digit --> Error
+            cout << "Only 8 digit date-form are allowed.";
+            custom_pause("Please enter again.");
+            flag = false;
+        }
+
+        // got scope at this point.
         if (flag) {
-            if (stspecifier != "month" && stspecifier != "week" && stspecifier != "day") { // 오류5
+            if (scope_whatever != "month" && scope_whatever != "week" && scope_whatever != "day") { // 오류5
                 cout << "Invalid scope information entered." << endl;
                 custom_pause("Please enter again.");
                 continue;
             } else break;
         }
 
+        if (flag) break;
     }
 
     //출력
@@ -173,7 +197,7 @@ void Manager::showSchedule() {
         x += month_last[i];
     x += d2 - 1;
 
-    if (stspecifier == "month") {
+    if (scope_whatever == "month") {
 
         int first = 0; //첫 시작 주의 날짜 개수
         int repeat = 0; //7일이 꽉 차있는 주의 개수
@@ -216,35 +240,35 @@ void Manager::showSchedule() {
             x = 335;
         }
         for (int i = 0; i < first; i++) {
-            year[x].showSch(stspecifier);
+            year[x].showSch(scope_whatever);
             x++;
         }
         cout << endl;
         for (int j = 0; j < repeat; j++) {
             for (int k = 0; k < 7; k++) {
-                year[x].showSch(stspecifier);
+                year[x].showSch(scope_whatever);
                 x++;
             }
             cout << endl;
         }
         for (int l = 0; l < last; l++) {
-            year[x].showSch(stspecifier);
+            year[x].showSch(scope_whatever);
             x++;
         }
         cout << endl;
-    } else if (stspecifier == "week") {
+    } else if (scope_whatever == "week") {
         if (x >= 0 && x <= 3) {     //1월1-4일
             x = 0;
             while (true) {
                 if (x == 4) break;
-                year[x].showSch(stspecifier);
+                year[x].showSch(scope_whatever);
                 x++;
             }
         } else if (x >= 361 && x <= 365) {    //12월 27-31일
             x = 361;
             while (true) {
                 if (x == 366) break;
-                year[x].showSch(stspecifier);
+                year[x].showSch(scope_whatever);
                 x++;
             }
         } else {        //그 외의 경우    
@@ -253,13 +277,13 @@ void Manager::showSchedule() {
 
             int Sun = x - year[x].getDay() + 1;
             for (int i = 0; i < 7; i++) {
-                year[Sun].showSch(stspecifier);
+                year[Sun].showSch(scope_whatever);
                 Sun++;
             }
         }
         cout << endl;
     } else {
-        year[x].showSch(stspecifier);
+        year[x].showSch(scope_whatever);
         cout << endl;
     }
 }
