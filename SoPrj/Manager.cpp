@@ -994,6 +994,7 @@ void Manager::deleteSchedule() {
     cout << "Schedule successfully deleted. \n";
     custom_pause("Press any key to return to the main menu.\nPress any key to continue..");
     //delete[] dnum;
+
 }
 
 void Manager::custom_pause(const string& str) {
