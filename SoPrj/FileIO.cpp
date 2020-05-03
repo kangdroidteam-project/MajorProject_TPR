@@ -77,10 +77,14 @@ void FileIO::load(Date* date_data) {
         getline(fileDecrypted, tmp);
         if (tmp != "366") {
             // Max number is NOT 366  --> Ignore file reading, fall back to normal data(=0)
+            fileDecrypted.close();
+            remove("userInfoTMP");
             return;
         }
     } else {
         // that kinda thing does not exists
+        fileDecrypted.close();
+        remove("userInfoTMP");
         return;
     }
 
@@ -91,6 +95,8 @@ void FileIO::load(Date* date_data) {
         getline(fileDecrypted, tmp); // Ahhh handling needed if something happens
         if (tmp.length() != 8) {
             // Wrong or corrupted file format. Falling back to default data;
+            fileDecrypted.close();
+            remove("userInfoTMP");
             return;
         }
 
@@ -100,9 +106,11 @@ void FileIO::load(Date* date_data) {
         if (schedule_count < 0 || schedule_count > 20) {
             // Wrong or corrupted file format. Falling back to default data
             // This is caused when count of schedule is below 0 or more than 20.(Program sets its limit to 0 ~ 20)
+            fileDecrypted.close();
+            remove("userInfoTMP");
             return;
         }
-
+        
         // Schedule
         string keyword_file;
         string content_file;

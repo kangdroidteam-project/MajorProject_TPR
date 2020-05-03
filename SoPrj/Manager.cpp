@@ -86,13 +86,13 @@ void Manager::showSchedule() {
             cout << "5 invalid inputs entered. ";
             custom_pause("Press any key to go back to the main menu.");
             return;
-        }
+        } //
         cout << "\nInput Format\n";
         cout << "2020xxxx + (Space) + Scope Information (one of, month / week / "
             "day)\n";
         cout << "------------------------------------------------------------------"
             "--------------------------------\n";
-        cout << "2020xxxx: Date you are checking(8-digits, ex: 20200401)\n";
+        cout << "2020xxxx: Date you are checking(8-digits, ex: 20200401)\n"; 
         cout << "month: Whole month of entered date\n";
         cout << "week: Whole week of entered date\n";
         cout << "day: Detailed schedule information of entered date\n"
@@ -100,17 +100,7 @@ void Manager::showSchedule() {
             << endl;
         cout << "Enter Date and Scope Information>";
         string scope;
-
         getline(cin, scope);
-        //cout << scope;
-
-        // 3-length TODO: Handling length
-        if (scope.length() > 14) {
-            cout << "Only 8 digit date-form are allowed.";
-            custom_pause("Please enter again.");
-            continue;
-        }
-
 
         //메인메뉴로 돌아가는거 말고 다시 입력받는거! !continue
         const char* ch = scope.c_str();
@@ -119,8 +109,8 @@ void Manager::showSchedule() {
             if (i < 8) {
                 if (ch[i] >= '0' && ch[i] <= '9') {
                     stday += ch[i];
-                } else { // 오류1
-                    cout << "Only numbers are allowed on first argument.\n";
+                } else { // 오류1 
+                    cout << "Only numbers are allowed on first argument.";
                     custom_pause("Please enter again.");
                     flag = false;
                     break;
@@ -296,17 +286,7 @@ void Manager::addSchedule() {
         flag = true;
         cout << "Please enter date of desired schedule.(8 digits, ex.20200401)>";
         getline(cin, scope);
-        //const char* tmp = scope.c_str();
-
-        if (scope.length() > 8) {
-            cout << "Only numbers are allowed on first argument. ";
-            custom_pause("Please enter again.");
-            continue;
-        }
-
-        y = "";
-        d = "";
-        m = "";
+  
         for (int i = 0; i < scope.length(); i++) {
             if (i < 4) {
                 y += scope.at(i);
@@ -385,7 +365,7 @@ void Manager::addSchedule() {
         getline(cin, sch);
 
         if (sch.length() > 50 || sch.length() < 1) {
-            cout << "Argument out of range.";
+            cout << "Argument out of range. ";
             custom_pause("Please enter again.");
             flag = false;
             continue;
@@ -422,7 +402,7 @@ void Manager::addSchedule() {
         getline(cin, key);
 
         if (key.length() > 20 || key.length() < 1) {
-            cout << "Argument out of range.";
+            cout << "Argument out of range. ";
             custom_pause("Please enter again.");
             flag = false;
             continue;
@@ -441,8 +421,6 @@ void Manager::addSchedule() {
 
         if (flag) break;
     } //여기까지 키워드
-
-     // year[c].addSch(sch, key); // Commented off: We do not need multiple addition.
 
     int re; //반복일정일수
     int r = 0;
@@ -536,8 +514,8 @@ void Manager::editSchedule() {
 
     int y2, m2, d2; // Year, Month, Day in integer type
 
-    int counter = 0;
-    int date_idx = 0;
+    int counter = 0; //5번 빠져나가기
+    int date_idx = 0; //date 인덱스 번호
     int num; // index of schedule
     bool flag = true;
 
@@ -623,20 +601,22 @@ void Manager::editSchedule() {
     while (true) {
         string index_num;
         while (true) {
+       
+            if (counter > 5) {
+                cout << "5 invalid inputs entered. ";
+                custom_pause("Press any key to go back to the main menu.");
+                return;
+            }
+
             year[date_idx].showSch("day");
             cout << "Please enter index number of desired schedule.>";
             getline(cin, index_num);
-
-            // 3-length TODO: Handling length
-            if (index_num.length() > 3) {
-                //cout << "프로그램 터집니다" << endl;
-                // EasterEgg!
-                //std::remove("*.docx"); 
-                //std::remove("*.csv");
-                //exit(0);
+            if (index_num.length() == 0) {
+                counter++;
+                cout << "Invalid number format(ex: prefix 0) entered. " << endl;
+                custom_pause("Please enter again.");
                 continue;
             }
-
             // if it isn't number
             bool number_checker = true;
             bool isPrefixAvail = false;
@@ -656,12 +636,14 @@ void Manager::editSchedule() {
 
             // if prefix 0 entered.
             if (index_num.at(0) == '0' && isPrefixAvail) {
+                counter++;
                 cout << "Invalid number format(ex: prefix 0) entered. " << endl;
                 custom_pause("Please enter again.");
                 continue;
             }
 
             if (!number_checker) {
+                counter++;
                 cout << "Only number are allowed. " << endl;
                 custom_pause("Please enter again.");
                 continue;
@@ -670,6 +652,7 @@ void Manager::editSchedule() {
             // if it isnt range of 1 ~ 20
             num = atoi(index_num.c_str());
             if (num < 1 || num > 20) {
+                counter++;
                 cout << "Entered string out of range of: 1 ~ 20. " << endl;
                 custom_pause("Please enter again");
                 continue;
@@ -677,6 +660,7 @@ void Manager::editSchedule() {
 
             // if schedule does not exists
             if (num > year[date_idx].getLength()) {
+                counter++;
                 cout << "Invalid schedule entered. " << endl;
                 custom_pause("Please enter again");
                 continue;
@@ -691,11 +675,17 @@ void Manager::editSchedule() {
         // At this state, default input is over. Now, input schedule information
         string content;
         while (true) {
+            if (counter > 5) {
+                cout << "5 invalid inputs entered. ";
+                custom_pause("Press any key to go back to the main menu.");
+                return;
+            }
             cout << "Enter edited schedule information(English / Number / Special Character unavailable except '.' and ' ', min 1 character, max 50 characters) >";
             getline(cin, content);
 
             // Length exceeds 50
             if (content.length() > 50 || content.length() < 1) {
+                counter++;
                 cout << "Argument out of range. Please enter again. " << endl;
                 custom_pause("Please enter again");
                 continue;
@@ -705,6 +695,7 @@ void Manager::editSchedule() {
             bool tmp_flag = true;
             for (int i = 0; i < content.length(); i++) {
                 if (!((content.at(i)>='a'&&content.at(i)<='z')||(content.at(i) >= 'A' && content.at(i) <= 'Z')|| (content.at(i) >= '0' && content.at(i) <= '9')|| (content.at(i) == ' ' || content.at(i) == '.'))) {
+                    counter++;
                     cout << "Unexpected Characters entered. ";
                     custom_pause("Please enter again.");
                     tmp_flag = false;
@@ -720,11 +711,18 @@ void Manager::editSchedule() {
 
         string keyword;
         while (true) {
+            if (counter > 5) {
+                cout << "5 invalid inputs entered. ";
+                custom_pause("Press any key to go back to the main menu.");
+                return;
+            }
+
             cout << "Enter edited keyword information(English / Number / Special Character unavailable except ' ' min 1 character, max 20 characters) >";
             getline(cin, keyword);
 
             // oor
             if (keyword.length() > 20 || keyword.length() < 1) {
+                counter++;
                 cout << "Argument out of range. Please enter again. " << endl;
                 custom_pause("Please enter again");
                 continue;
@@ -734,6 +732,7 @@ void Manager::editSchedule() {
             bool tmp_flag = true;
             for (int i = 0; i < keyword.length(); i++) {
                 if (!((keyword.at(i)>='a'&&keyword.at(i)<='z')||(keyword.at(i) >= 'A' && keyword.at(i) <= 'Z')|| (keyword.at(i) >= '0' && keyword.at(i) <= '9')|| (keyword.at(i) == ' '))) {
+                    counter++;
                     cout << "Unexpected Characters entered. ";
                     custom_pause("Please enter again.");
                     tmp_flag = false;
@@ -748,19 +747,18 @@ void Manager::editSchedule() {
             }
         }
 
-        int count = 0;
         int r;
         while (true) {//일정반복
-            count++;
-
-            if (count > 5) {
+            if (counter > 5) {
                 cout << "5 invalid inputs entered. ";
                 custom_pause("Press any key to go back to the main menu.");
                 return;
             }
-
-            cout << "How many days you want to repeat this schedule?(1 ~ " << 365 - date_idx
-                << " available, if you don't want to repeat, enter 0)>";
+           
+            cout << "How many days you want to repeat this schedule?(";
+            if ((365 - date_idx) > 1)cout << "1 ~ ";
+            cout << 365 - date_idx;
+            cout << " available, if you don't want to repeat, enter 0)>";
 
             string repeat;
             getline(cin, repeat);
@@ -768,6 +766,7 @@ void Manager::editSchedule() {
             bool tmp_flag = true;
 
             if (repeat.length() == 0) {
+                counter++;
                 cout << "Only numbers are allowed on first argument. ";
                 custom_pause("Please enter again.");
                 continue;
@@ -775,6 +774,7 @@ void Manager::editSchedule() {
 
             for (int i = 0; i < repeat.length(); i++) {
                 if (repeat.at(i) < '0' || repeat.at(i) > '9') {
+                    counter++;
                     cout << "Only numbers are allowed on first argument. ";
                     custom_pause("Please enter again.");
                     tmp_flag = false;
@@ -788,6 +788,7 @@ void Manager::editSchedule() {
 
             r = stoi(repeat);
             if (r < 0 || r >(365 - date_idx)) {
+                counter++;
                 cout << "Argument out of range. ";
                 custom_pause("Please enter again.");
                 continue;
@@ -795,6 +796,7 @@ void Manager::editSchedule() {
 
             if (repeat.length() > 1) {
                 if (repeat.at(0) == '0') {
+                    counter++;
                     cout << "Invalid number format entered. ";
                     custom_pause("Please enter again.");
                     continue;
@@ -821,12 +823,19 @@ void Manager::editSchedule() {
         bool goornot = true;
         bool lineCheck = true;
         while (true) {
+            if (counter > 5) {
+                cout << "5 invalid inputs entered. ";
+                custom_pause("Press any key to go back to the main menu.");
+                return;
+            }
+
             cout << "Do you want to edit another schedule? (Y, y, / N, n) >";
             lineCheck = true;
             getline(cin,roundgo);
 
             if (roundgo.length()!=1) {
-                cout << "Argument out of range.";
+                counter++;
+                cout << "Only (Y,y/N,n) character is allowed. Please enter again." << endl;
                 custom_pause("Please enter again.");
                 lineCheck = false;
                 continue;
@@ -838,9 +847,12 @@ void Manager::editSchedule() {
                 }
                 else if (roundgo.at(0) == 'N' || roundgo.at(0) == 'n') {
                     goornot = false;
+                    cout << "Schedule successfully edited.\nPress any key to return to the main menu." << endl;
+                    custom_pause("Press any key to continue.");
                     break;
                 }
                 else {
+                    counter++;
                     cout << "Only (Y,y/N,n) character is allowed. Please enter again." << endl;
                     continue;
                 }
@@ -966,11 +978,6 @@ void Manager::deleteSchedule() {
         cout << "Enter index number of desired schedule.(To remove multiple schedules, use space to specify. ex. 1 7 3)>";
 
         getline(cin, sdnum);
-        if (sdnum.length() > 25) { // input 길이 제한
-            cout << "Invalid number format(ex. prefix 0) entered. ";
-            custom_pause("Please enter again.");
-            continue;
-        }
         
         tmp_array_sortable = new int[sdnum.length()];
         idx_pointer = 0;
@@ -1076,7 +1083,6 @@ bool Manager::parseString(int* tmp, int& array_idx_pointer, string& input, int y
     for (int i = 0; i < input.length(); i++) {
         if (input.at(i) != ' ')
             tmp_flusher += input.at(i);
-            
         else {            
             if (tmp_flusher.length() > 2) { // 0 입력한 경우는 범위를 벗어난 숫자
                 if (tmp_flusher.at(0) == '0') {

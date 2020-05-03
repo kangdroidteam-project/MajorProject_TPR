@@ -3,7 +3,7 @@
 
 using namespace std;
 
-bool hasNext(string &input) {
+bool hasNext(string& input) {
     for (int i = 1; i < input.length(); i++) {
         if (input.at(i) != 32) {
             if (input.at(i) > 0) {
@@ -27,38 +27,43 @@ int main(void) {
         cout << "Enter Menu Number >";
 
         getline(cin, menu);
-
-        if(menu.length()<1){
-            cout<<"Only numbers are allowed. Please enter again."<<endl; continue;
-		}else if (menu.length() > 1) {
-            // Re-Input --> NEED TO DISCUSS
-            cout << "Argument out of range. Please enter again." << endl;
-            continue;
-        } else if (menu.at(0) == '0' && hasNext(menu)) {
+        
+        if (menu.length() < 1) {
+            cout << "Only numbers are allowed. Please enter again." << endl; continue;
+        }
+        else if (menu.at(0) == '0' && hasNext(menu)) {
             // Prefix 0 detected.
             cout << "Invalid number format(ex: prefix 0) entered. Please enter again." << endl;
             continue;
-        } else if (menu.at(0) < '0' || menu.at(0) > '9') {
+        }
+        else if (menu.at(0) < '0' || menu.at(0) > '9') {
             // Only number are allowed
-            cout << "Only numbers are allowed. Please enter again." << endl; 
+            cout << "Only numbers are allowed. Please enter again." << endl;
             continue;
-        } else if (menu.at(0) < '1' || menu.at(0) > '6') {
+        }
+        else if (menu.at(0) < '1' || menu.at(0) > '5' || menu.length()>1) {
             // Number out of range
             cout << "Argument out of range. Please enter again." << endl;
             continue;
-        } else if (menu.at(0) == '1') {
+        }
+        else if (menu.at(0) == '1') {
             manager.showSchedule();
-        } else if (menu.at(0) == '2') {
+        }
+        else if (menu.at(0) == '2') {
             manager.addSchedule();
-        } else if (menu.at(0) == '3') {
+        }
+        else if (menu.at(0) == '3') {
             manager.editSchedule();
-        } else if (menu.at(0) == '4') {
+        }
+        else if (menu.at(0) == '4') {
             manager.deleteSchedule();
-        } else if (menu.at(0) == '5') {
+        }
+        else if (menu.at(0) == '5') {
             // exit
             manager.callSave();
             exit(0);
-        } else if (menu.at(0) == '6') {
+        }
+        else if (menu.at(0) == '6') {
             manager.callLoad();
         }
     }
