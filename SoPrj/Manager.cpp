@@ -878,6 +878,12 @@ void Manager::deleteSchedule() {
         getline(cin, date_str);
         str_year = "", str_month = "", str_day = "";
 
+        if (date_str.length() < 1) { // 엔터
+            cout << "Only numbers are allowed. ";
+            custom_pause("Please enter again.");
+            flag = false;
+            continue;
+        }
         if (flag) {
             for (int i = 0; i < date_str.length(); i++)
                 if (date_str.at(i) < '0' || date_str.at(i) > '9') {
@@ -960,7 +966,7 @@ void Manager::deleteSchedule() {
         cout << "Enter index number of desired schedule.(To remove multiple schedules, use space to specify. ex. 1 7 3)>";
 
         getline(cin, sdnum);
-        if (sdnum.length() != 14) {
+        if (sdnum.length() > 25) { // input 길이 제한
             cout << "Invalid number format(ex. prefix 0) entered. ";
             custom_pause("Please enter again.");
             continue;
@@ -1008,55 +1014,72 @@ void Manager::callLoad() {
 }
 
 bool Manager::parseString(int* tmp, int& array_idx_pointer, string& input, int year_idx) {
-    input += " "; // Add another space
     string tmp_flusher = "";
     array_idx_pointer = 0;
     bool ret_val = false;
-    if (input.length() < 1) {
+
+    if (input.length() < 1) { // 엔터 입력
         // less than 1
-        cout << "Invalid number format(ex. prefix 0) entered. ";
+        cout << "Entered character rather than number and space.";
         custom_pause("Please enter again.");
         return false;
-    } else {
-        if (input.at(0) == '0' || input.at(0) == ' ' || input.at(input.length() - 2) == ' ') {
-            cout << "Invalid number format(ex. prefix 0) entered. ";
-            custom_pause("Please enter again.");
-            return false;
-        }
-
-        if (input.length() == 1 && input.at(0) == ' ') {
-            cout << "Invalid number format(ex. prefix 0) entered. ";
+    }
+    else if (input.length() < 2 && input.at(0) == ' ') {
+        //스페이스 하나만 입력했을 경우(빈문자)
+        cout << "Invalid number format(ex. prefix 0) entered.";
+        custom_pause("Please enter again.");
+        return false;
+    }
+    // 숫자와 띄어쓰기가 아닌 문자가 있는가
+    // 이걸 input 에 대해 먼저 수행해야 우선순위 1
+    for (int i = 0; i < input.length(); i++) {
+        if (input.at(i) != ' ' && !((input.at(i) >= '0' && input.at(i) <= '9'))) {
+            cout << "Entered character rather than number and space.";
             custom_pause("Please enter again.");
             return false;
         }
     }
+
+    input += " "; // Add another space // 번호 구분을 위해서
+
+    if ((input.at(0) == ' ' && input.at(1) != ' ') || (input.at(input.length() - 2) == ' ' && input.at(input.length() - 3) != ' ')) {
+        //맨 앞 혹은 맨 뒤에 스페이스 하나를 입력한 경우 (연속 구분자x)
+        cout << "Invalid number format(ex. prefix 0) entered.";
+        custom_pause("Please enter again.");
+        return false;
+    }
+    
+    // 구분자 연속 or 5개 초과의 번호를 입력헀는가 
+    int cnt = 0; // 몇개 입력받았는지 (단순히 구분자로 나눔)
     for (int i = 0; i < input.length(); i++) {
-        if (input.at(i) != ' ') {
-            // 숫자와 띄어쓰기가 아닌 문자가 있는가
-            if (!((input.at(i) >= '0' && input.at(i) <= '9'))) {
-                // 숫자도 아니면서, 띄어쓰기도 아님
-                cout << "Entered character rather than number and space. ";
-                custom_pause("Please enter again.");
-                ret_val = false;
-                break;
-            } else {
-                tmp_flusher += input.at(i);
-            }
-            
-        } else if (input.at(i) == ' ') {
+        if (input.at(i) == ' ') {
             // 구분자를 연속으로 입력했는가
-            if (i < input.length() - 1) {
+            if (i < input.length() - 2) {   // 추가한 space 는 연속 구분자 x
                 if (input.at(i + 1) == ' ') {
                     // 연속 스페이스(구분자 연속 입력)
                     cout << "consecutive specifier entered. ";
                     custom_pause("Please enter again.");
-                    ret_val = false;
-                    break;
+                    return false;
                 }
             }
-            if (tmp_flusher.length() > 0) {
+            cnt++;
+        }
+    }
+
+    if (cnt > 5) {
+        cout << "Available until 5 schedule numbers. ";
+        custom_pause("Please enter again. ");
+        return false;
+    }
+
+    for (int i = 0; i < input.length(); i++) {
+        if (input.at(i) != ' ')
+            tmp_flusher += input.at(i);
+            
+        else {            
+            if (tmp_flusher.length() > 2) { // 0 입력한 경우는 범위를 벗어난 숫자
                 if (tmp_flusher.at(0) == '0') {
-                    // 지원하지 않는 형식(선행 0)
+                    // 지원하지 않는 형식 (선행 0)
                     cout << "Invalid number format(ex. prefix 0) entered. ";
                     custom_pause("Please enter again.");
                     ret_val = false;
@@ -1065,12 +1088,11 @@ bool Manager::parseString(int* tmp, int& array_idx_pointer, string& input, int y
             }
             
             int tmp_value_atoi = atoi(tmp_flusher.c_str());
-            if (tmp_value_atoi <= 20) {
+            if (tmp_value_atoi <= 20 && tmp_value_atoi > 0) {
                 if (tmp_value_atoi > year[year_idx].getLength()) {
                     // 존재하지 않는 일정
-                    cout << "Selected schedule does not exist. " << tmp_value_atoi;
+                    cout << "Selected schedule does not exist.";
                     custom_pause("Please enter again.");
-                    
                     ret_val = false;
                     break;
                 }
@@ -1086,18 +1108,7 @@ bool Manager::parseString(int* tmp, int& array_idx_pointer, string& input, int y
         }
         ret_val = true;
     }
-
-    if (!ret_val) {
-        return false;
-    }
-
-    // 일정 번호가 5개를 초과했는가
-    if (array_idx_pointer > 5) {
-        cout << "Available until 5 schedule numbers. ";
-        custom_pause("Please enter again. ");
-        return false;
-    }
-
+   
     return ret_val;
 }
 
