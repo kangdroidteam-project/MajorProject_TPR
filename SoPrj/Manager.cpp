@@ -69,12 +69,11 @@ Manager::Manager() {
 
 void Manager::showSchedule() {
     int cnt = 0;
-    string stday = "";
     string scope_whatever;
     string y = "";
     string d = "";
     string m = "";
-    int d2, m2, y2, c;
+    int d2, m2, y2;
 
     while (true) {
         bool flag = true;
@@ -519,10 +518,6 @@ void Manager::addSchedule() {
             year[i].addSch(sch, key);
         }
     }
-    /*for (int i = c + re; i < 366; i += re) {
-        year[i].addSch(sch, key);
-    }*/
-
 
     cout << "Schedule sucessfully added. " << endl;
     custom_pause("Press any key to return to the main menu.\nPress any key to continue. . .");
@@ -543,11 +538,15 @@ void Manager::editSchedule() {
     int num; // index of schedule
     bool flag = true;
 
-
     while (true) {
+        str_year = "";
+        str_month = "";
+        str_day = "";
+        date_idx = 0;
+        num = 0;
         counter++;
         flag = true;
-
+        
         if (counter > 5) {
             cout << "5 invalid inputs entered. ";
             custom_pause("Press any key to go back to the main menu.");
@@ -562,6 +561,7 @@ void Manager::editSchedule() {
         for (int i = 0; i < date_str.length(); i++) {
             if (date_str.at(i) < '0' || date_str.at(i) > '9') {
                 flag = false;
+                break;
             }
         }
         if (!flag) {
@@ -588,11 +588,6 @@ void Manager::editSchedule() {
             y2 = atoi(str_year.c_str());
             m2 = atoi(str_month.c_str());
             d2 = atoi(str_day.c_str());
-
-            /*
-            str_year = date_str.at(0) + date_str.at(1) + date_str.at(2) + date_str.at(3);
-            str_month = date_str.at(4) + date_str.at(5);
-            str_day = date_str.at(6) + date_str.at(7); */
         }
 
         // Since this state, year-month-day(int) variable is set. otherwise --> re enter again.
@@ -602,10 +597,7 @@ void Manager::editSchedule() {
             continue;
         }
 
-        int date_form = atoi(date_str.c_str());
-
         // What if schedule does not exists?; Worst case: 365, Best Case: 0
-
 
         for (int i = 0; i < m2 - 1; i++) {
             date_idx += month_last[i];
@@ -689,9 +681,6 @@ void Manager::editSchedule() {
                 custom_pause("Please enter again");
                 continue;
             } else {
-                // Clear before we get into getline or next cin.
-                //cin.clear();
-                //cin.ignore(INT_MAX, '\n');
                 break; // All checking finished.
             }
         }
@@ -809,7 +798,6 @@ void Manager::editSchedule() {
                 continue;
             }
 
-
             r = stoi(repeat);
             if (r < 0 || r >(365 - date_idx)) {
                 counter++;
@@ -824,11 +812,8 @@ void Manager::editSchedule() {
                     cout << "Invalid number format entered. ";
                     custom_pause("Please enter again.");
                     continue;
-                } /*else {
-                    break;
-                }*/
+                }
             }
-
             break;
         }
 
@@ -980,8 +965,6 @@ void Manager::deleteSchedule() {
     year[c].showSch("day");
 
     string sdnum;  //삭제할 일정 번호
-    //int* dnum = nullptr;
-    //int len = 0;
     int* tmp_array_sortable = nullptr;
     vector<int> tmp_vararr;
     int idx_pointer = 0;
@@ -1024,8 +1007,6 @@ void Manager::deleteSchedule() {
 
     cout << "Schedule successfully deleted. \n";
     custom_pause("Press any key to return to the main menu.\nPress any key to continue..");
-    //delete[] dnum;
-
 }
 
 void Manager::custom_pause(const string& str) {
