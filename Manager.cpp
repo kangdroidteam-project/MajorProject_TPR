@@ -161,9 +161,13 @@ void Manager::showSchedule() {
                     d += day_tmp_t.at(i);
                 }
             }
-            y2 = atoi(y.c_str());
-            m2 = atoi(m.c_str());
-            d2 = atoi(d.c_str());
+            try {
+                y2 = stoi(y);
+                m2 = stoi(m);
+                d2 = stoi(d);
+            } catch (const exception& expn) {
+                return;
+            }
 
             //check true date
             if (!timecal.isCorrectDay(y2, m2, d2)) {
@@ -457,7 +461,12 @@ void Manager::editSchedule() {
             }
 
             // if it isnt range of 1 ~ 20
-            num = atoi(index_num.c_str());
+            try {
+                num = stoi(index_num);
+            } catch (const exception& expn) {
+                return;
+            }
+
             if (num < 1 || num > date_tmp.GetLengthSid()) {
                 cout << "Entered string out of range of: 1 ~ " << date_tmp.GetLengthSid() << ". " << endl;
                 custom_pause("Please enter again");
@@ -833,7 +842,12 @@ bool Manager::parseString(int* tmp, int& array_idx_pointer, string& input, int y
                 }
             }
 
-            int tmp_value_atoi = atoi(tmp_flusher.c_str());
+            int tmp_value_atoi;
+            try {
+                tmp_value_atoi= stoi(tmp_flusher.c_str());
+            } catch (const exception& expn) {
+                return -1;
+            }
             if (tmp_value_atoi > 0) {
                 if (tmp_value_atoi > year_idx) {
                     // �������� �ʴ� ����
@@ -925,7 +939,13 @@ int Manager::repeatSchedule(time_t today, int menu) {
         }
         if (!flag) continue;
 
-        r = stoi(repeat);
+        try {
+            r = stoi(repeat);
+        } catch (const exception& expn) {
+            // Cannot parse as int
+            return -1;
+        }
+
 
         if (r < 0 || r >c) {
             cout << "Argument out of range. ";
@@ -990,9 +1010,14 @@ time_t Manager::input_finishDay() {
             }
         }
 
-        d2 = atoi(d.c_str());
-        m2 = atoi(m.c_str());
-        y2 = atoi(y.c_str());
+        try {
+            d2 = stoi(d);
+            m2 = stoi(m);
+            y2 = stoi(y);
+        } catch (const exception& expn) {
+            return -1; // Cannot parse
+        }
+
 
 
         if (flag) {
@@ -1081,9 +1106,13 @@ time_t Manager::get_date() {
         }
 
         //check true date
-        d2 = atoi(d.c_str());
-        m2 = atoi(m.c_str());
-        y2 = atoi(y.c_str());
+        try {
+            d2 = stoi(d);
+            m2 = stoi(m);
+            y2 = stoi(y);
+        } catch (const exception& expn) {
+            return -1;
+        }
 
         if (!timecal.isCorrectDay(y2, m2, d2)) {
             cout << "Invalid date entered. ";
