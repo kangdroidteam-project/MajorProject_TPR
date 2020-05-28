@@ -53,14 +53,38 @@ void FileIO::load(vector<Schedule>& dt) {
     string descriptor = parseString(tmpEncoded, st_it);
 
     if (descriptor == "This is T3 From SoPrj") {
-        int schedule_count = stoi(parseString(tmpEncoded, st_it));
+        int schedule_count;
+        try {
+            schedule_count = stoi(parseString(tmpEncoded, st_it));
+        } catch (const exception& expn) {
+            // Cannot parse as int
+            return;
+        }
         Schedule tmp_sc("", "", -1);
         for (int i = 0; i < schedule_count; i++) {
-            int sid = stoi(parseString(tmpEncoded, st_it));
+            int sid;
+            try {
+                sid = stoi(parseString(tmpEncoded, st_it));
+            } catch (const exception& expn) {
+                // Cannot parse as int
+                return;
+            }
             tmp_sc.setSid(sid);
-            int ts_ctr = stoi(parseString(tmpEncoded, st_it));
+            int ts_ctr;
+            try {
+                ts_ctr = stoi(parseString(tmpEncoded, st_it));
+            } catch (const exception& expn) {
+                // Cannot parse as int
+                return;
+            }
             for (int v = 0; v < ts_ctr; v++) {
-                int val = stoi(parseString(tmpEncoded, st_it));
+                int val;
+                try {
+                    val = stoi(parseString(tmpEncoded, st_it));
+                } catch (const exception& expn) {
+                    // Cannot parse as int
+                    return;
+                }
                 tmp_sc.add(val);
             }
             string key = parseString(tmpEncoded, st_it);
