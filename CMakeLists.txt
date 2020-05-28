@@ -3,4 +3,4 @@ project(LinuxMajorProject)
 
 set(CMAKE_CXX_STANDARD 14)
 
-add_executable(LinuxMajorProject main.cpp Date.cpp Date.h Manager.cpp Manager.h Schedule.cpp Schedule.h TimeCalculator.cpp TimeCalculator.h)
+add_executable(LinuxMajorProject main.cpp Date.cpp Date.h Manager.cpp Manager.h Schedule.cpp Schedule.h TimeCalculator.cpp TimeCalculator.h FileIO.cpp FileIO.h)

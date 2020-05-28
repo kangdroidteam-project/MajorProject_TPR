@@ -86,3 +86,20 @@ void Schedule::setRepeat(time_t start_timestamp, time_t limit_timestamp, int spe
 int Schedule::getSid() {
     return this->sid;
 }
+
+string Schedule::getAllInfo() {
+    string ret = "";
+    ret.append(to_string(this->sid).append("\n"));
+    ret.append(to_string(tmp.size()).append("\n"));
+    for (int i = 0; i < tmp.size(); i++) {
+        ret.append(to_string(tmp.at(i)).append("\n"));
+    }
+
+    ret.append(this->getKeyword().append("\n"));
+    ret.append(this->getContent().append("\n"));
+    return ret;
+}
+
+void Schedule::setSid(int t) {
+    this->sid = t;
+}

@@ -20,6 +20,7 @@
 #include "Schedule.h"
 #include "TimeCalculator.h"
 #include "Date.h"
+#include "FileIO.h"
 using namespace std;
 
 class Manager {

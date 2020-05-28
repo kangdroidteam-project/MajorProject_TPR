@@ -752,11 +752,13 @@ void Manager::custom_pause(const string& str) {
 }
 
 void Manager::callSave() {
-    //fio.save(this->year);
+    FileIO fio;
+    fio.save(this->date);
 }
 
 void Manager::callLoad() {
-    //fio.load(this->year);
+    FileIO fio;
+    fio.load(this->date);
 }
 
 bool Manager::parseString(int* tmp, int& array_idx_pointer, string& input, int year_idx) {

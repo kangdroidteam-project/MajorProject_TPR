@@ -30,6 +30,8 @@ public:
     bool isDayExists(time_t ts); // returns true if day exists, returns false if not exists.
     void setRepeat(time_t start_timestamp, time_t limit_timestamp, int specifier, int duration); // Set Repeat
     int getSid();
+    void setSid(int val);
+    string getAllInfo();
 };
 
 
