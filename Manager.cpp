@@ -86,7 +86,7 @@ void Manager::showSchedule() {
 	int d2, m2, y2;
 	
 	#if defined(TESTCASE_ENABLED)
-	string case_tc[18] = {"안녕 week", ":p month", "sso34 day", "1234567 week", "123456789 month", "213412341232342341234324 day", "0 week", "20380101 month", "19691231 day", "20330455 week", "20400404 week", "20101301 month", "20400488 day", "20339999 month", "40001400 week", "20310101:week", "20001212week", "20000327  week"};
+	string case_tc[24] = {"안녕 week", ":p month", "sso34 day", "1234567 week", "123456789 month", "213412341232342341234324 day", "0 week", "20380101 month", "19691231 day", "20330455 week", "20400404 week", "20101301 month", "20400488 day", "20339999 month", "40001400 week", "20310101:week", "20001212week", "20000327  week", "20310303 weeke", "19991010 mooooooon", "20201111_tt", "19891030 12334", "20201111 범위!", "1234567890123456789"};
 	int case_counter = 0;
 	#endif
 
@@ -120,7 +120,7 @@ void Manager::showSchedule() {
 		cout << "Enter Date and Scope Information>";
 		string scope;
 		#if defined(TESTCASE_ENABLED)
-		if (case_counter >= 18) return;
+		if (case_counter >= 24) return;
 		cout << " " << case_tc[case_counter] << endl;
 		scope = case_tc[case_counter++];
 		#else
