@@ -9,26 +9,31 @@ Manager::Manager() {
 	// Load saved data to array
 	callLoad();
 }
-
+#if !defined(_WIN64)
 int _getch() {
-    // int ch;
-    // struct termios old;
-    // struct termios current;
+	#if defined(DONT_USE_GETCH)
+	return 10;
+	#else
+    int ch;
+    struct termios old;
+    struct termios current;
 
-    // // Get old Standard Input setting
-    // tcgetattr(0, &old);
-    // // Back up current setting[copy to current]
-    // current = old;
+    // Get old Standard Input setting
+    tcgetattr(0, &old);
+    // Back up current setting[copy to current]
+    current = old;
 
-    // // Modify current Standard input setting[Without echoing char]
-    // current.c_lflag &= ~ICANON;
-    // current.c_lflag &= ~ECHO;
+    // Modify current Standard input setting[Without echoing char]
+    current.c_lflag &= ~ICANON;
+    current.c_lflag &= ~ECHO;
 
-    // tcsetattr(0, TCSANOW, &current);
-    // ch = getchar();
-    // tcsetattr(0, TCSANOW, &old);
-    // return ch;
+    tcsetattr(0, TCSANOW, &current);
+    ch = getchar();
+    tcsetattr(0, TCSANOW, &old);
+    return ch;
+	#endif
 }
+#endif
 
 bool Manager::hasNext(string& input) {
 	for (size_t i = 1; i < input.length(); i++) {
@@ -115,7 +120,7 @@ void Manager::showSchedule() {
 		cout << "Enter Date and Scope Information>";
 		string scope;
 		#if defined(TESTCASE_ENABLED)
-		if (case_counter >= 18) break;
+		if (case_counter >= 18) return;
 		cout << " " << case_tc[case_counter] << endl;
 		scope = case_tc[case_counter++];
 		#else
