@@ -16,8 +16,8 @@ private:
     vector<time_t> tmp;
 
 public:
-    // ½ÃÀÛ timestamp, ¸®¹Ô timestamp, duration(¹Ýº¹)
-    // void setRepeat(time_t start_timestamp, time_t limit_timestamp, time_t duration); // º¸·ù
+    // ì‹œìž‘ timestamp, ë¦¬ë°‹ timestamp, duration(ë°˜ë³µ)
+    // void setRepeat(time_t start_timestamp, time_t limit_timestamp, time_t duration); // ë³´ë¥˜
     //Schedule();
     Schedule(string con, string key, unsigned long long sid);
     ~Schedule();
