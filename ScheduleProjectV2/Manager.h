@@ -13,6 +13,7 @@
 #include "Schedule.h"
 #include "TimeCalculator.h"
 #include "Date.h"
+#include "FileIO.h"
 using namespace std;
 
 class Manager {
@@ -22,7 +23,7 @@ private:
     vector<Schedule> date;
 
 	// Schedule SID Container for duplication check
-	vector<int> sid_container;
+	vector<unsigned long long> sid_container;
 
 	TimeCalculator timecal;
 
@@ -42,18 +43,18 @@ public:
 
 	void callSave();
 	void callLoad();
-	bool parseString(int* tmp, int& array_idx_pointer, string& input, int year_idx);
-	void removeSame(int* arr, int& idx, vector<int>&tmp);
-	bool isHas(vector<int>& tmpVector, int target);
+	bool parseString(unsigned long long* tmp, unsigned long long& array_idx_pointer, string& input, unsigned long long year_idx);
+	void removeSame(unsigned long long* arr, unsigned long long& idx, vector<unsigned long long>&tmp);
+	bool isHas(vector<unsigned long long>& tmpVector, unsigned long long target);
 	int repeatSchedule(time_t time,int menu);
 	time_t input_finishDay();
 	time_t get_date();
 
 	// Generate SID and push to duplication checker container
-	int generateSID();
+	unsigned long long generateSID();
 
 	// Check whether arg's sid exists on SID Dup checker container
-	bool hasSID(int sid_checker);
+	bool hasSID(unsigned long long sid_checker);
 	void setColor(int color);
 };
 

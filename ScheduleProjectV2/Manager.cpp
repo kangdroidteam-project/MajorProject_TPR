@@ -6,8 +6,8 @@ Manager::Manager() {
 	callLoad();
 }
 
-bool Manager::hasNext(string& input) {
-	for (int i = 1; i < input.length(); i++) {
+bool Manager::hasNext(string& input) {			
+	for (size_t i = 1; i < input.length(); i++) {
 		if (input.at(i) != 32) {
 			if (input.at(i) > 0) {
 				return true;
@@ -18,18 +18,23 @@ bool Manager::hasNext(string& input) {
 }
 
 void Manager::showDate(time_t rawtime, string scope_info) {
-	int index_num = 1;
+	unsigned long long index_num = 1;//일정 번호
 	struct tm* dt;
 	char buffer[50];
 	//time_t rawtime = 0;//std::time(0);
 	dt = localtime(&rawtime);
-	strftime(buffer, sizeof(buffer), "%Y.%m.%d (%a)", dt);
+	if (dt->tm_wday == 0) {
+		strftime(buffer, sizeof(buffer), "\033[0;31m%Y.%m.%d (%a)\033[0m", dt);
+	} else {
+		strftime(buffer, sizeof(buffer), "%Y.%m.%d (%a)", dt);
+	}
+	
 	//std::cout << std::string(buffer) << std::endl;
 
 	cout << string(buffer) << " " << endl;
 
 	// Search needed --> TODO
-	for (int i = 0; i < date.size(); i++) {
+	for (unsigned long long i = 0; i < date.size(); i++) {
 		if (date.at(i).isDayExists(rawtime)) {
 			// There is something!
 			if (scope_info == "day") {
@@ -79,11 +84,10 @@ void Manager::showSchedule() {
 		string scope;
 		getline(cin, scope);
 
-		const char* ch = scope.c_str();
 		string day_tmp_t = "";
 		int ctr = 0;
 
-		for (int i = 0; i < scope.length(); i++) {
+		for (size_t i = 0; i < scope.length(); i++) {
 			if (scope.at(i) == 32) {
 				ctr++;
 			}
@@ -99,7 +103,7 @@ void Manager::showSchedule() {
 		}
 
 		// Get Date
-		for (int i = 0; i < scope.length(); i++) {
+		for (size_t i = 0; i < scope.length(); i++) {
 			if (scope.at(i) != 32) {
 				// if at(i) neq integer
 				if (scope.at(i) < '0' || scope.at(i) > '9') {
@@ -113,9 +117,9 @@ void Manager::showSchedule() {
 					day_tmp_t += scope.at(i);
 				}
 			} else if (scope.at(i) == 32) {
-				if (i + 1 < scope.length()) {
+				if ((i + 1) < scope.length()) {
 					// no specifier enetered.
-					scope_whatever = scope.substr(i + 1, scope.length());
+					scope_whatever = scope.substr((i+1), scope.length());
 				} else {
 					cout << "Invalid scope information entered." << endl;
 					custom_pause("Please enter again.");
@@ -128,7 +132,7 @@ void Manager::showSchedule() {
 		if (!flag) continue;
 
 		if (day_tmp_t.length() == 8) {
-			for (int i = 0; i < day_tmp_t.length(); i++) {
+			for (size_t i = 0; i < day_tmp_t.length(); i++) {
 				if (i < 4) {
 					y += day_tmp_t.at(i);
 				} else if (i < 6) {
@@ -137,9 +141,13 @@ void Manager::showSchedule() {
 					d += day_tmp_t.at(i);
 				}
 			}
-			y2 = atoi(y.c_str());
-			m2 = atoi(m.c_str());
-			d2 = atoi(d.c_str());
+			try {
+				y2 = stoi(y);
+				m2 = stoi(m);
+				d2 = stoi(d);
+			} catch (const exception& expn) {
+				return;
+			}
 
 			//check true date
 			if (!timecal.isCorrectDay(y2, m2, d2)) {
@@ -229,7 +237,7 @@ void Manager::addSchedule() {
 		}
 
 		if (flag) {
-			for (int i = 0; i < sch.length(); i++)
+			for (size_t i = 0; i < sch.length(); i++)
 				if (!((sch.at(i) >= 'a' && sch.at(i) <= 'z') || (sch.at(i) >= 'A' && sch.at(i) <= 'Z') || (sch.at(i) >= '0' && sch.at(i) <= '9') || (sch.at(i) == ' ' || sch.at(i) == '.'))) {
 					cout << "Unexpected Characters entered. ";
 					custom_pause("Please enter again.");
@@ -358,10 +366,10 @@ void Manager::editSchedule() {
 	if (today == -1) return; // 날짜 입력 오류
 
 	timecal.calculateDateFromStamp(y2, m2, d2, wd, today);
-	int size = 0;
+	unsigned long long size = 0;
 
 	//일정 없는지 확인
-	for (int i = 0; i < date.size(); i++) {
+	for (unsigned long long i = 0; i < date.size(); i++) {
 		if (date.at(i).isDayExists(timecal.dateToStamp(y2, m2, d2))) {
 			size++;
 		}
@@ -372,13 +380,13 @@ void Manager::editSchedule() {
 		return;
 	}
 
-
+	
 	Date date_tmp(today, &date);
 
 	int count = 0;
 	bool flag;
-	int date_idx = 0; //date 인덱스 번호
-	int num; // index of schedule
+	// unsigned long long date_idx = 0; //date 인덱스 번호
+	unsigned long long num; // index of schedule
 
 	while (true) {
 		string index_num;
@@ -405,7 +413,7 @@ void Manager::editSchedule() {
 			// if it isn't number
 			bool number_checker = true;
 			bool isPrefixAvail = false;
-			for (int i = 0; i < index_num.length(); i++) {
+			for (size_t i = 0; i < index_num.length(); i++) {
 				if (i > 0) {
 					if (index_num.at(i) != 32) {
 						if (index_num.at(i) > 0) {
@@ -433,7 +441,13 @@ void Manager::editSchedule() {
 			}
 
 			// if it isnt range of 1 ~ 20
-			num = atoi(index_num.c_str());
+			try {
+				num = stoi(index_num);
+			} catch (const exception& expn) {
+				cout << "Invalid schedule entered. " << endl;
+				custom_pause("Please enter again");
+				continue;
+			}
 			if (num < 1 || num > date_tmp.GetLengthSid()) {
 				cout << "Entered string out of range of: 1 ~ " << date_tmp.GetLengthSid() << ". " << endl;
 				custom_pause("Please enter again");
@@ -473,7 +487,7 @@ void Manager::editSchedule() {
 
 			// Unexpected Character
 			bool tmp_flag = true;
-			for (int i = 0; i < sch.length(); i++) {
+			for (size_t i = 0; i < sch.length(); i++) {
 				if (!((sch.at(i) >= 'a' && sch.at(i) <= 'z') || (sch.at(i) >= 'A' && sch.at(i) <= 'Z') || (sch.at(i) >= '0' && sch.at(i) <= '9') || (sch.at(i) == ' ' || sch.at(i) == '.'))) {
 					cout << "Unexpected Characters entered. ";
 					custom_pause("Please enter again.");
@@ -510,7 +524,7 @@ void Manager::editSchedule() {
 
 			// unexpected char
 			bool tmp_flag = true;
-			for (int i = 0; i < key.length(); i++) {
+			for (size_t i = 0; i < key.length(); i++) {
 				if (!((key.at(i) >= 'a' && key.at(i) <= 'z') || (key.at(i) >= 'A' && key.at(i) <= 'Z') || (key.at(i) >= '0' && key.at(i) <= '9') || (key.at(i) == ' '))) {
 					cout << "Unexpected Characters entered. ";
 					custom_pause("Please enter again.");
@@ -649,8 +663,8 @@ void Manager::deleteSchedule() {
 	if (y2 == -1) return; // 날짜 입력 오류
 
 	//일정 있는지 확인
-	int size = 0;
-	for (int i = 0; i < date.size(); i++) {
+	unsigned long long size = 0;
+	for (unsigned long long i = 0; i < date.size(); i++) {
 		if (date.at(i).isDayExists(timecal.dateToStamp(y2, m2, d2))) {
 			size++;
 		}
@@ -668,9 +682,9 @@ void Manager::deleteSchedule() {
 	bool flag = true;
 
 	string sdnum;  //삭제할 일정 번호
-	int* tmp_array_sortable = nullptr;
-	vector<int> tmp_vararr;
-	int idx_pointer = 0;
+	unsigned long long* tmp_array_sortable = nullptr;
+	vector<unsigned long long> tmp_vararr;
+	unsigned long long idx_pointer = 0;
 
 	while (true) {
 
@@ -687,15 +701,8 @@ void Manager::deleteSchedule() {
 
 		getline(cin, sdnum);
 
-		tmp_array_sortable = new int[sdnum.length()];
+		tmp_array_sortable = new unsigned long long[sdnum.length()];
 		idx_pointer = 0;
-
-		/*int size = 0;
-		for (int i = 0; i < date.max_size(); i++) {
-			if (date.at(i).isDayExists(today)) {
-				size++;
-			}
-		}*/
 
 		bool isParsed = parseString(tmp_array_sortable, idx_pointer, sdnum, date_tmp.GetLengthSid());
 		if (!isParsed) {
@@ -728,14 +735,16 @@ void Manager::custom_pause(const string& str) {
 }
 
 void Manager::callSave() {
-	//fio.save(this->year);
+	FileIO fio;
+	fio.save(this->date);
 }
 
 void Manager::callLoad() {
-	//fio.load(this->year);
+	FileIO fio;
+	fio.load(this->date);
 }
 
-bool Manager::parseString(int* tmp, int& array_idx_pointer, string& input, int year_idx) {
+bool Manager::parseString(unsigned long long* tmp, unsigned long long& array_idx_pointer, string& input, unsigned long long year_idx) {
 	string tmp_flusher = "";
 	array_idx_pointer = 0;
 	bool ret_val = false;
@@ -753,7 +762,7 @@ bool Manager::parseString(int* tmp, int& array_idx_pointer, string& input, int y
 	}
 	// 숫자와 띄어쓰기가 아닌 문자가 있는가
 	// 이걸 input 에 대해 먼저 수행해야 우선순위 1
-	for (int i = 0; i < input.length(); i++) {
+	for (size_t i = 0; i < input.length(); i++) {
 		if (input.at(i) != ' ' && !((input.at(i) >= '0' && input.at(i) <= '9'))) {
 			cout << "Entered character rather than number and space.";
 			custom_pause("Please enter again.");
@@ -772,11 +781,11 @@ bool Manager::parseString(int* tmp, int& array_idx_pointer, string& input, int y
 
 	// 구분자 연속 or 5개 초과의 번호를 입력헀는가 
 	int count = 0; // 몇개 입력받았는지 (단순히 구분자로 나눔)
-	for (int i = 0; i < input.length(); i++) {
+	for (size_t i = 0; i < input.length(); i++) {
 		if (input.at(i) == ' ') {
 			// 구분자를 연속으로 입력했는가
 			if (i < input.length() - 2) {   // 추가한 space 는 연속 구분자 x
-				if (input.at(i + 1) == ' ') {
+				if (input.at((i + 1)) == ' ') {
 					// 연속 스페이스(구분자 연속 입력)
 					cout << "consecutive specifier entered. ";
 					custom_pause("Please enter again.");
@@ -793,7 +802,7 @@ bool Manager::parseString(int* tmp, int& array_idx_pointer, string& input, int y
 		return false;
 	}
 
-	for (int i = 0; i < input.length(); i++) {
+	for (size_t i = 0; i < input.length(); i++) {
 		if (input.at(i) != ' ')
 			tmp_flusher += input.at(i);
 		else {
@@ -807,7 +816,15 @@ bool Manager::parseString(int* tmp, int& array_idx_pointer, string& input, int y
 				}
 			}
 
-			int tmp_value_atoi = atoi(tmp_flusher.c_str());
+			unsigned long long tmp_value_atoi;
+			try {
+				tmp_value_atoi = stoi(tmp_flusher);
+			} catch (const exception& expn) {
+				cout << "Invalid number format(ex. prefix 0) entered. ";
+				custom_pause("Please enter again.");
+				ret_val = false;
+				break;
+			}
 			if (tmp_value_atoi > 0) {
 				if (tmp_value_atoi > year_idx) {
 					// 존재하지 않는 일정
@@ -832,8 +849,8 @@ bool Manager::parseString(int* tmp, int& array_idx_pointer, string& input, int y
 	return ret_val;
 }
 
-void Manager::removeSame(int* arr, int& idx, vector<int>& tmp) {
-	for (int i = 0; i < idx; i++) {
+void Manager::removeSame(unsigned long long* arr, unsigned long long& idx, vector<unsigned long long>& tmp) {
+	for (unsigned long long i = 0; i < idx; i++) {
 		if (isHas(tmp, arr[i])) {
 			// Not exists.
 			tmp.push_back(arr[i]);
@@ -841,11 +858,11 @@ void Manager::removeSame(int* arr, int& idx, vector<int>& tmp) {
 	}
 }
 
-bool Manager::isHas(vector<int>& tmpVector, int target) {
+bool Manager::isHas(vector<unsigned long long>& tmpVector, unsigned long long target) {
 	if (tmpVector.size() == 0) {
 		return true;
 	} else {
-		for (int i = 0; i < tmpVector.size(); i++) {
+		for (unsigned long long i = 0; i < tmpVector.size(); i++) {
 			if (target == tmpVector.at(i)) {
 				// Same thing exists.
 				return false;
@@ -889,7 +906,7 @@ int Manager::repeatSchedule(time_t today, int menu) {
 			continue;
 		}
 
-		for (int i = 0; i < repeat.length(); i++) {
+		for (size_t i = 0; i < repeat.length(); i++) {
 			if (repeat.at(i) < '0' || repeat.at(i) > '9') {
 				cout << "Only numbers are allowed. ";
 				custom_pause("Please enter again.");
@@ -899,7 +916,13 @@ int Manager::repeatSchedule(time_t today, int menu) {
 		}
 		if (!flag) continue;
 
-		r = stoi(repeat);
+		try {
+			r = stoi(repeat);
+		} catch (const exception& expn) {
+			cout << "Argument out of range. ";
+			custom_pause("Please enter again.");
+			continue;
+		}
 
 		if (r < 0 || r >c) {
 			cout << "Argument out of range. ";
@@ -917,7 +940,6 @@ int Manager::repeatSchedule(time_t today, int menu) {
 
 		if (flag)
 			return r;
-
 	}
 
 }
@@ -954,7 +976,7 @@ time_t Manager::input_finishDay() {
 			return fin;
 		}
 
-		for (int i = 0; i < scope.length(); i++) {
+		for (size_t i = 0; i < scope.length(); i++) {
 			if (i < 4) {
 				y += scope.at(i);
 			} else if (i < 6) {
@@ -964,13 +986,8 @@ time_t Manager::input_finishDay() {
 			}
 		}
 
-		d2 = atoi(d.c_str());
-		m2 = atoi(m.c_str());
-		y2 = atoi(y.c_str());
-
-
 		if (flag) {
-			for (int i = 0; i < scope.length(); i++)
+			for (size_t i = 0; i < scope.length(); i++)
 				if (scope.at(i) < '0' || scope.at(i) > '9') {
 					cout << "Only numbers are allowed on first argument. ";
 					custom_pause("Please enter again.");
@@ -979,6 +996,8 @@ time_t Manager::input_finishDay() {
 				}
 		}
 
+		
+
 		if (flag) {
 			if (scope.length() != 8) {
 				cout << "Only 8 digit date-form are allowed. ";
@@ -986,6 +1005,18 @@ time_t Manager::input_finishDay() {
 				flag = false;
 				continue;
 			}
+		}
+
+		try {
+			d2 = stoi(d);
+			m2 = stoi(m);
+			y2 = stoi(y);
+		}
+		catch (const exception & expn) {
+			cout << "Invalid date entered. ";
+			custom_pause("Please enter again.");
+			flag = false;
+			continue;
 		}
 
 		//check true date
@@ -1026,7 +1057,7 @@ time_t Manager::get_date() {
 		flag = true;
 		cout << "Please enter date of desired schedule.(8digits, ex.20200401)>";
 		getline(cin, scope);
-		for (int i = 0; i < scope.length(); i++)
+		for (size_t i = 0; i < scope.length(); i++)
 			if (scope.at(i) < '0' || scope.at(i) > '9') {
 				cout << "Only numbers are allowed on first argument. ";
 				custom_pause("Please enter again.");
@@ -1044,7 +1075,7 @@ time_t Manager::get_date() {
 
 		y = "", d = "", m = "";
 
-		for (int i = 0; i < scope.length(); i++) {
+		for (size_t i = 0; i < scope.length(); i++) {
 			if (i < 4) {
 				y += scope.at(i);
 			} else if (i < 6) {
@@ -1055,9 +1086,15 @@ time_t Manager::get_date() {
 		}
 
 		//check true date
-		d2 = atoi(d.c_str());
-		m2 = atoi(m.c_str());
-		y2 = atoi(y.c_str());
+		try {
+			d2 = stoi(d);
+			m2 = stoi(m);
+			y2 = stoi(y);
+		} catch (const exception& expn) {
+			cout << "Invalid date entered. ";
+			custom_pause("Please enter again.");
+			continue;
+		}
 
 		if (!timecal.isCorrectDay(y2, m2, d2)) {
 			cout << "Invalid date entered. ";
@@ -1072,8 +1109,8 @@ time_t Manager::get_date() {
 	return timecal.dateToStamp(y2, m2, d2);
 }
 
-int Manager::generateSID() {
-	int sid_num; // Random number
+unsigned long long Manager::generateSID() {
+	unsigned long long sid_num; // Random number
 	while (true) {
 		sid_num = rand();
 		if (!hasSID(sid_num)) {
@@ -1083,7 +1120,7 @@ int Manager::generateSID() {
 	return sid_num;
 }
 
-bool Manager::hasSID(int sid_checker) {
+bool Manager::hasSID(unsigned long long sid_checker) {
 	if (std::find(sid_container.begin(), sid_container.end(), sid_checker) != sid_container.end()) {
 		// has
 		return true;
@@ -1091,8 +1128,3 @@ bool Manager::hasSID(int sid_checker) {
 		return false;
 	}
 }
-/*void Date::setColor(int color){
-	CONSOLE_SCREEN_BUFFER_INFO info;
-	GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &info);
-	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), (info.wAttributes&0xf0) | (color&0xf));
-}*/

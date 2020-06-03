@@ -9,17 +9,17 @@ using namespace std;
 class Date {
 public:
     Date(time_t cur_timestamp, vector<Schedule>* tmpVector);
-    void add(int schedule_sid);
+    void add(unsigned long long schedule_sid);
     void initSid();
+    void deleteSchedule(vector<unsigned long long> list_arr);
+    void editSchedule(unsigned long long idx, Schedule& sc);
+    Schedule getSchedule(unsigned long long schedule_sid);
+    unsigned long long findOffset(unsigned long long schedule_sid);
+    unsigned long long GetLengthSid();
     void print_date();
-    void deleteSchedule(vector<int> list_arr);
-    void editSchedule(int idx, Schedule& sc);
-    Schedule getSchedule(int schedule_sid);
-    int findOffset(int schedule_sid);
-    int GetLengthSid();
 private:
     time_t cur_timestamp;
-    vector<int> sid;
+    vector<unsigned long long> sid;
     vector<Schedule>* schedule_tmp;
     int year;
     int month;

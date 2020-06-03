@@ -16,13 +16,6 @@ public:
     // Calculate Week
     time_t calculateWeek(int year, int month, int day, bool max = false);
 
-    // Show all information about that day
-    void showDate(time_t rawtime);
-    
-    // Print information
-    // printDate(2020, 5, 14, "month") means prints May
-    void printDate(int year, int month, int day, string specifier);
-
     // Calculate and return(modify) year, month, day, wday information based on timestamp
     void calculateDateFromStamp(int& year, int& month, int& day, int& wday, time_t ts);
 

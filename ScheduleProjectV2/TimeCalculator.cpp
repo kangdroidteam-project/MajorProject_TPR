@@ -47,46 +47,6 @@ time_t TimeCalculator::calculateWeek(int year, int month, int day, bool max) {
     return final_tmp;
 }
 
-void TimeCalculator::showDate(time_t rawtime) {
-    struct tm* dt;
-    char buffer[50];
-    //time_t rawtime = 0;//std::time(0);
-    dt = localtime(&rawtime);
-    strftime(buffer, sizeof(buffer), "%Y.%m.%d (%a)", dt); // Convert timestamp to date --> in string
-    std::cout << std::string(buffer) << std::endl;
-    /*for (int i = 0; i < global_iteration; i++) {
-        if (array_used[i].getRawTime() == rawtime) {
-            cout << "Schedule Exists!" << endl;
-        }
-    }*/ 
-}
-
-void TimeCalculator::printDate(int year, int month, int day, string specifier) {
-    if (specifier == "month") {
-        // Whatever, Month means day starts from month to day ends - month
-        time_t timestmp_raw = dateToStamp(year, month, 1); // Minum
-        time_t tmp = dateToStamp(year, month + 1, 1); // Maximum
-        while (timestmp_raw < tmp) {
-            showDate(timestmp_raw);
-            timestmp_raw += DAY_SEC; // one day increment
-        }
-    } else if (specifier == "day") {
-        time_t timestmp_raw = dateToStamp(year, month, day);
-        showDate(timestmp_raw);
-    } else if (specifier == "week") {
-        // Calculate minimum range
-        time_t minimum_range = calculateWeek(year, month, day, false);
-        time_t maximum_range = calculateWeek(year, month, day, true);
-        while (minimum_range < maximum_range) {
-            showDate(minimum_range);
-            minimum_range += DAY_SEC;
-        }
-        // Calculate maximum range
-        // iterate.
-    } else {
-    }
-}
-
 /**
  * Calculate Date from timestamp
  * Args: (Ref)year, (Ref)month, (Ref)day, (Ref)wday, timestamp
@@ -99,6 +59,7 @@ void TimeCalculator::calculateDateFromStamp(int& year, int& month, int& day, int
     month = tmp_struct->tm_mon+1;
     day = tmp_struct->tm_mday;
     wday = tmp_struct->tm_wday;
+
 }
 
 /**

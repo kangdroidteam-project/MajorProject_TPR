@@ -1,12 +1,7 @@
 #include "Schedule.h"
 #include "TimeCalculator.h"
 
-/*Schedule::Schedule()
-	:Schedule("","")
-{
-
-}*/
-Schedule::Schedule(string con, string key, int sid){
+Schedule::Schedule(string con, string key, unsigned long long sid){
 	this->content = con;
     this->keyword = key;
 	this->sid = sid;
@@ -37,7 +32,7 @@ void Schedule::setContent(string& s) {
 }
 
 bool Schedule::isDayExists(time_t ts) {
-	for (int i = 0; i < tmp.size(); i++) {
+	for (unsigned long long i = 0; i < tmp.size(); i++) {
 		if (ts == tmp.at(i)) {
 			return true;
 		}
@@ -83,6 +78,23 @@ void Schedule::setRepeat(time_t start_timestamp, time_t limit_timestamp, int spe
 	}
 }
 
-int Schedule::getSid() {
+unsigned long long Schedule::getSid() {
 	return this->sid;
+}
+
+string Schedule::getAllInfo() {
+	string ret = "";
+	ret.append(to_string(this->sid).append("\n"));
+	ret.append(to_string(tmp.size()).append("\n"));
+	for (unsigned long long i = 0; i < tmp.size(); i++) {
+		ret.append(to_string(tmp.at(i)).append("\n"));
+	}
+
+	ret.append(this->getKeyword().append("\n"));
+	ret.append(this->getContent().append("\n"));
+	return ret;
+}
+
+void Schedule::setSid(unsigned long long t) {
+	this->sid = t;
 }
