@@ -4,7 +4,9 @@
 #include <ctime>
 #include <string>
 
+#if defined(_WIN64)
 #pragma warning(disable:4996)
+#endif
 using namespace std;
 
 class Schedule {

@@ -31,7 +31,7 @@ int _getch() {
 }
 
 bool Manager::hasNext(string& input) {
-	for (int i = 1; i < input.length(); i++) {
+	for (size_t i = 1; i < input.length(); i++) {
 		if (input.at(i) != 32) {
 			if (input.at(i) > 0) {
 				return true;
@@ -121,12 +121,10 @@ void Manager::showSchedule() {
 		#else
 		getline(cin, scope);
 		#endif
-
-		const char* ch = scope.c_str();
 		string day_tmp_t = "";
 		int ctr = 0;
 
-		for (int i = 0; i < scope.length(); i++) {
+		for (size_t i = 0; i < scope.length(); i++) {
 			if (scope.at(i) == 32) {
 				ctr++;
 			}
@@ -142,7 +140,7 @@ void Manager::showSchedule() {
 		}
 
 		// Get Date
-		for (int i = 0; i < scope.length(); i++) {
+		for (size_t i = 0; i < scope.length(); i++) {
 			if (scope.at(i) != 32) {
 				// if at(i) neq integer
 				if (scope.at(i) < '0' || scope.at(i) > '9') {
@@ -171,7 +169,7 @@ void Manager::showSchedule() {
 		if (!flag) continue;
 
 		if (day_tmp_t.length() == 8) {
-			for (int i = 0; i < day_tmp_t.length(); i++) {
+			for (size_t i = 0; i < day_tmp_t.length(); i++) {
 				if (i < 4) {
 					y += day_tmp_t.at(i);
 				} else if (i < 6) {
@@ -276,7 +274,7 @@ void Manager::addSchedule() {
 		}
 
 		if (flag) {
-			for (int i = 0; i < sch.length(); i++)
+			for (size_t i = 0; i < sch.length(); i++)
 				if (!((sch.at(i) >= 'a' && sch.at(i) <= 'z') || (sch.at(i) >= 'A' && sch.at(i) <= 'Z') || (sch.at(i) >= '0' && sch.at(i) <= '9') || (sch.at(i) == ' ' || sch.at(i) == '.'))) {
 					cout << "Unexpected Characters entered. ";
 					custom_pause("Please enter again.");
@@ -314,7 +312,7 @@ void Manager::addSchedule() {
 		}
 
 		if (flag) {
-			for (int i = 0; i < key.length(); i++) {
+			for (size_t i = 0; i < key.length(); i++) {
 				if (!((key.at(i) >= 'a' && key.at(i) <= 'z') || (key.at(i) >= 'A' && key.at(i) <= 'Z') || (key.at(i) >= '0' && key.at(i) <= '9') || (key.at(i) == ' '))) {
 					cout << "Unexpected Characters entered. ";
 					custom_pause("Please enter again.");
@@ -452,7 +450,7 @@ void Manager::editSchedule() {
 			// if it isn't number
 			bool number_checker = true;
 			bool isPrefixAvail = false;
-			for (int i = 0; i < index_num.length(); i++) {
+			for (size_t i = 0; i < index_num.length(); i++) {
 				if (i > 0) {
 					if (index_num.at(i) != 32) {
 						if (index_num.at(i) > 0) {
@@ -526,7 +524,7 @@ void Manager::editSchedule() {
 
 			// Unexpected Character
 			bool tmp_flag = true;
-			for (int i = 0; i < sch.length(); i++) {
+			for (size_t i = 0; i < sch.length(); i++) {
 				if (!((sch.at(i) >= 'a' && sch.at(i) <= 'z') || (sch.at(i) >= 'A' && sch.at(i) <= 'Z') || (sch.at(i) >= '0' && sch.at(i) <= '9') || (sch.at(i) == ' ' || sch.at(i) == '.'))) {
 					cout << "Unexpected Characters entered. ";
 					custom_pause("Please enter again.");
@@ -563,7 +561,7 @@ void Manager::editSchedule() {
 
 			// unexpected char
 			bool tmp_flag = true;
-			for (int i = 0; i < key.length(); i++) {
+			for (size_t i = 0; i < key.length(); i++) {
 				if (!((key.at(i) >= 'a' && key.at(i) <= 'z') || (key.at(i) >= 'A' && key.at(i) <= 'Z') || (key.at(i) >= '0' && key.at(i) <= '9') || (key.at(i) == ' '))) {
 					cout << "Unexpected Characters entered. ";
 					custom_pause("Please enter again.");
@@ -801,7 +799,7 @@ bool Manager::parseString(unsigned long long* tmp, unsigned long long& array_idx
 	}
 	// ���ڿ� ���Ⱑ �ƴ� ���ڰ� �ִ°�
 	// �̰� input �� ���� ���� �����ؾ� �켱���� 1
-	for (int i = 0; i < input.length(); i++) {
+	for (size_t i = 0; i < input.length(); i++) {
 		if (input.at(i) != ' ' && !((input.at(i) >= '0' && input.at(i) <= '9'))) {
 			cout << "Entered character rather than number and space.";
 			custom_pause("Please enter again.");
@@ -820,7 +818,7 @@ bool Manager::parseString(unsigned long long* tmp, unsigned long long& array_idx
 
 	// ������ ���� or 5�� �ʰ��� ��ȣ�� �Է����°� 
 	int count = 0; // � �Է¹޾Ҵ��� (�ܼ��� �����ڷ� ����)
-	for (int i = 0; i < input.length(); i++) {
+	for (size_t i = 0; i < input.length(); i++) {
 		if (input.at(i) == ' ') {
 			// �����ڸ� �������� �Է��ߴ°�
 			if (i < input.length() - 2) {   // �߰��� space �� ���� ������ x
@@ -841,7 +839,7 @@ bool Manager::parseString(unsigned long long* tmp, unsigned long long& array_idx
 		return false;
 	}
 
-	for (int i = 0; i < input.length(); i++) {
+	for (size_t i = 0; i < input.length(); i++) {
 		if (input.at(i) != ' ')
 			tmp_flusher += input.at(i);
 		else {
@@ -945,7 +943,7 @@ int Manager::repeatSchedule(time_t today, int menu) {
 			continue;
 		}
 
-		for (int i = 0; i < repeat.length(); i++) {
+		for (size_t i = 0; i < repeat.length(); i++) {
 			if (repeat.at(i) < '0' || repeat.at(i) > '9') {
 				cout << "Only numbers are allowed. ";
 				custom_pause("Please enter again.");
@@ -1015,7 +1013,7 @@ time_t Manager::input_finishDay() {
 			return fin;
 		}
 
-		for (int i = 0; i < scope.length(); i++) {
+		for (size_t i = 0; i < scope.length(); i++) {
 			if (i < 4) {
 				y += scope.at(i);
 			} else if (i < 6) {
@@ -1026,7 +1024,7 @@ time_t Manager::input_finishDay() {
 		}
 
 		if (flag) {
-			for (int i = 0; i < scope.length(); i++)
+			for (size_t i = 0; i < scope.length(); i++)
 				if (scope.at(i) < '0' || scope.at(i) > '9') {
 					cout << "Only numbers are allowed on first argument. ";
 					custom_pause("Please enter again.");
@@ -1096,7 +1094,7 @@ time_t Manager::get_date() {
 		flag = true;
 		cout << "Please enter date of desired schedule.(8digits, ex.20200401)>";
 		getline(cin, scope);
-		for (int i = 0; i < scope.length(); i++)
+		for (size_t i = 0; i < scope.length(); i++)
 			if (scope.at(i) < '0' || scope.at(i) > '9') {
 				cout << "Only numbers are allowed on first argument. ";
 				custom_pause("Please enter again.");
@@ -1114,7 +1112,7 @@ time_t Manager::get_date() {
 
 		y = "", d = "", m = "";
 
-		for (int i = 0; i < scope.length(); i++) {
+		for (size_t i = 0; i < scope.length(); i++) {
 			if (i < 4) {
 				y += scope.at(i);
 			} else if (i < 6) {

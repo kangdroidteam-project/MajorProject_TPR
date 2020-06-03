@@ -33,7 +33,7 @@ void Date::print_date() {
 
     cout << string(buffer) << " ";
 
-    for (int i = 0; i < sid.size(); i++) {
+    for (unsigned long long i = 0; i < sid.size(); i++) {
         Schedule tmpS = getSchedule(sid.at(i));
         if (tmpS.getContent() == "something" && tmpS.getKeyword() == "something" && tmpS.getSid() == -200) {
             // Failed to search, skip it

@@ -1,12 +1,14 @@
 #include <iostream>
 #include "Manager.h"
 #include <unistd.h>
+#if defined(_WIN64)
 #pragma warning(disable:4996)
+#endif
 
 using namespace std;
 
 bool hasNext(string& input) {
-	for (int i = 1; i < input.length(); i++) {
+	for (size_t i = 1; i < input.length(); i++) {
 		if (input.at(i) != 32) {
 			if (input.at(i) > 0) {
 				return true;

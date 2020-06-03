@@ -1,7 +1,9 @@
 #pragma once
 #include <iostream>
 #include <ctime>
+#if defined(_WIN64)
 #pragma warning(disable:4996)
+#endif
 
 #define MAX_ARR_CTR 36500 // Approx. 100 years from 1970
 #define DAY_SEC 86400
