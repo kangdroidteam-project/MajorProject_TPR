@@ -19,7 +19,5 @@ private:
     string parseString(const string str, unsigned long long& iterator_loc);
     string decryptString(string encoded);
     string encryptString(string decoded);
-    ifstream reader_file;
-    ofstream writer_file;
     int key = -2;
 };

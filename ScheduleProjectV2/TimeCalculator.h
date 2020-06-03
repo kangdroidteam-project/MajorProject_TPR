@@ -23,6 +23,4 @@ public:
 
     // whaaatever
     bool isCorrectDay(int year, int month, int day);
-    
-    bool calcDayCorrection(int year, int month, int day);
 };

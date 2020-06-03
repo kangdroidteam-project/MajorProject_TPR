@@ -170,7 +170,7 @@ void Manager::showSchedule() {
 				cout << "Invalid scope information entered." << endl;
 				custom_pause("Please enter again.");
 				continue;
-			} else break;
+			}
 		}
 
 		if (flag) break;
@@ -325,10 +325,10 @@ void Manager::addSchedule() {
 			continue;
 		} else if (menu.at(0) == '4') {
 			//반복 일정 적용x
-			time_t timestamp = timecal.dateToStamp(y2, m2, d2);
+			//time_t timestamp = timecal.dateToStamp(y2, m2, d2);
 
 			Schedule schedule(sch, key, generateSID());
-			schedule.add(timestamp);
+			schedule.add(today);
 			//schedule.setKeyword(key);
 			//schedule.setContent(sch);
 
@@ -547,7 +547,7 @@ void Manager::editSchedule() {
 
 
 		count = 0;
-		string repeat;
+		string menu;
 
 
 
@@ -564,23 +564,23 @@ void Manager::editSchedule() {
 			cout << "1. Every n Year    2. Every n Month   3. Every n Day   4. No Repeat\n>";
 
 			// 오류 처리
-			getline(cin, repeat);
+			getline(cin, menu);
 
-			if (repeat.length() < 1) {
+			if (menu.length() < 1) {
 				cout << "Only numbers are allowed. Please enter again." << endl; continue;
-			} else if (repeat.at(0) == '0' && hasNext(repeat)) {
+			} else if (menu.at(0) == '0' && hasNext(menu)) {
 				// Prefix 0 detected.
 				cout << "Invalid number format(ex: prefix 0) entered. Please enter again." << endl;
 				continue;
-			} else if (repeat.at(0) < '0' || repeat.at(0) > '9') {
+			} else if (menu.at(0) < '0' || menu.at(0) > '9') {
 				// Only number are allowed
 				cout << "Only numbers are allowed. Please enter again." << endl;
 				continue;
-			} else if (repeat.at(0) < '1' || repeat.at(0) > '4' || repeat.length() > 1) {
+			} else if (menu.at(0) < '1' || menu.at(0) > '4' || menu.length() > 1) {
 				// Number out of range
 				cout << "Argument out of range. Please enter again." << endl;
 				continue;
-			} else if (repeat.at(0) == '4') {
+			} else if (menu.at(0) == '4') {
 				//반복 일정 적용x
 				time_t timestamp = timecal.dateToStamp(y2, m2, d2);
 
@@ -588,12 +588,12 @@ void Manager::editSchedule() {
 				schedule.add(timestamp);
 				date_tmp.editSchedule(num, schedule);
 
-				cout << "Schedule sucessfully added. " << endl;
+				//cout << "Schedule sucessfully added. " << endl;
 
 			} else {  // 1번 2번 3번
 
-				int repeat_ret = repeatSchedule(timecal.dateToStamp(y2, m2, d2), repeat.at(0) - '0');
-				if (repeat_ret == -1) return;
+				int repeat = repeatSchedule(timecal.dateToStamp(y2, m2, d2), menu.at(0) - '0');
+				if (repeat == -1) return;
 
 				time_t fin = input_finishDay();
 				if (fin == -1) return;
@@ -601,7 +601,7 @@ void Manager::editSchedule() {
 				Schedule schedule(sch, key, generateSID());
 				//schedule.setKeyword(key);
 				//schedule.setContent(sch);
-				schedule.setRepeat(timecal.dateToStamp(y2, m2, d2), fin, repeat.at(0) - '0', repeat_ret);
+				schedule.setRepeat(timecal.dateToStamp(y2, m2, d2), fin, menu.at(0) - '0', repeat);
 				date_tmp.editSchedule(num, schedule);
 				//date.push_back(schedule);
 				break;
@@ -1040,7 +1040,7 @@ time_t Manager::input_finishDay() {
 
 time_t Manager::get_date() {
 	int count = 0;
-	string scope, sch, key;
+	string scope;
 	bool flag = true;
 
 	string y = "", d = "", m = "";

@@ -59,7 +59,6 @@ void TimeCalculator::calculateDateFromStamp(int& year, int& month, int& day, int
     month = tmp_struct->tm_mon+1;
     day = tmp_struct->tm_mday;
     wday = tmp_struct->tm_wday;
-
 }
 
 /**
@@ -101,23 +100,3 @@ bool TimeCalculator::isCorrectDay(int year, int month, int day) {
         return true;
     }
 }
-
-bool TimeCalculator::calcDayCorrection(int year, int month, int day) {
-    // Converted day - will be compared with original y/m/d
-// conv_wday is not-used, but garbage
-    int conv_year, conv_month, conv_day, conv_wday;
-
-    // 1. Convert y/m/d to timestamp
-    time_t original = dateToStamp(year, month, day);
-
-    // 2. Re-Calc y/m/d again
-    calculateDateFromStamp(conv_year, conv_month, conv_day, conv_wday, original);
-
-    // 3. Compare
-    if (conv_day != day) {
-        return false;
-    } else {
-        return true;
-    }
-}
-

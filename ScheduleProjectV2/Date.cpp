@@ -19,6 +19,7 @@ void Date::add(unsigned long long schedule_sid) {
 }
 
 void Date::print_date() {
+
     struct tm* dt;
     char buffer[50];
     //char mon_buf[20];
@@ -49,16 +50,17 @@ void Date::initSid() {
     for (unsigned long long i = 0; i < schedule_tmp->size(); i++) {
         if (schedule_tmp->at(i).isDayExists(this->cur_timestamp)) {
             add(schedule_tmp->at(i).getSid());
-        }
+        } 
     }
 }
 
 void Date::deleteSchedule(vector<unsigned long long> list_arr) {
+    bool check = true;
     for (unsigned long long i = 0; i < list_arr.size(); i++) {
         // its list number-1 is actual index value of sid
         // Find offset from Schedule vector
-        unsigned long long offset = findOffset(sid.at(list_arr.at(i) - 1));
-        if (offset != -1) {
+        unsigned long long offset = findOffset(sid.at(list_arr.at(i) - 1),check);
+        if (check) {
             schedule_tmp->erase(schedule_tmp->begin() + offset);
         }
     }
@@ -66,8 +68,9 @@ void Date::deleteSchedule(vector<unsigned long long> list_arr) {
 
 void Date::editSchedule(unsigned long long idx, Schedule& sc) {
     // Remove idx;th schedule
-    unsigned long long offset = findOffset(sid.at(idx - 1));
-    if (offset != -1) {
+    bool check=true;
+    unsigned long long offset = findOffset(sid.at(idx - 1),check);
+    if (check) {
         schedule_tmp->erase(schedule_tmp->begin() + offset);
         Schedule tmp = sc; // Need correct declare: is really using reference would NOT invalidate its ptr number?
         schedule_tmp->push_back(tmp);
@@ -83,13 +86,14 @@ Schedule Date::getSchedule(unsigned long long schedule_sid) {
     return Schedule("something", "something", -200); // Failed to search
 }
 
-unsigned long long Date::findOffset(unsigned long long schedule_sid) {
+unsigned long long Date::findOffset(unsigned long long schedule_sid, bool check) {
     for (unsigned long long i = 0; i < schedule_tmp->size(); i++) {
         if (schedule_tmp->at(i).getSid() == schedule_sid) {
             return i;
         }
     }
-    return -1;
+    check = false;
+    return 0;
 }
 
 unsigned long long Date::GetLengthSid(){
