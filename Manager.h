@@ -6,20 +6,14 @@
 //#include "Date.h"
 //#include "FileIO.h"
 #include <algorithm>
-#if defined(_WIN64)
 #include <Windows.h>
 #include <conio.h>
-#else
-#include <termios.h>
-#endif
 #include <vector>
 
 #include "Schedule.h"
 #include "TimeCalculator.h"
 #include "Date.h"
 #include "FileIO.h"
-
-#include "test.h"
 using namespace std;
 
 class Manager {

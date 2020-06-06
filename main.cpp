@@ -1,9 +1,6 @@
 #include <iostream>
 #include "Manager.h"
-#include <unistd.h>
-#if defined(_WIN64)
 #pragma warning(disable:4996)
-#endif
 
 using namespace std;
 
@@ -22,11 +19,6 @@ int main(void) {
 	srand(time(NULL));
 	Manager manager;
 	string menu;
-	#if defined(TESTCASE_MAIN_ENABLED)
-	string case_men[14] = {"02", "6", "0", "-2", "일", "one", "!", "(스페이스바 엔터)", "(엔터)", " 3", "3 ", " 3 ", "1234567890123456789", "-1234567890123456789"
-};
-	int iter_ctr = 0;
-	#endif
 	while (true) {
 		cout << endl;
 		cout << "(1) Show Schedule\n";
@@ -36,13 +28,8 @@ int main(void) {
 		cout << "(5) Exit Program\n";
 		cout << "Enter Menu Number >";
 
-		#if defined(TESTCASE_MAIN_ENABLED)
-		if (iter_ctr >= 14) break;
-		cout << " " << case_men[iter_ctr] << endl;
-		menu = case_men[iter_ctr++];
-		#else
 		getline(cin, menu);
-		#endif
+
 		if (menu.length() < 1) {
 			cout << "Only numbers are allowed. Please enter again." << endl; continue;
 		}
@@ -81,7 +68,6 @@ int main(void) {
 		else if (menu.at(0) == '6') {
 			manager.callLoad();
 		}
-		sleep(10);
 	}
 	return 0;
 }

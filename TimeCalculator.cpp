@@ -47,46 +47,6 @@ time_t TimeCalculator::calculateWeek(int year, int month, int day, bool max) {
     return final_tmp;
 }
 
-void TimeCalculator::showDate(time_t rawtime) {
-    struct tm* dt;
-    char buffer[50];
-    //time_t rawtime = 0;//std::time(0);
-    dt = localtime(&rawtime);
-    strftime(buffer, sizeof(buffer), "%Y.%m.%d (%a)", dt); // Convert timestamp to date --> in string
-    std::cout << std::string(buffer) << std::endl;
-    /*for (int i = 0; i < global_iteration; i++) {
-        if (array_used[i].getRawTime() == rawtime) {
-            cout << "Schedule Exists!" << endl;
-        }
-    }*/ 
-}
-
-void TimeCalculator::printDate(int year, int month, int day, string specifier) {
-    if (specifier == "month") {
-        // Whatever, Month means day starts from month to day ends - month
-        time_t timestmp_raw = dateToStamp(year, month, 1); // Minum
-        time_t tmp = dateToStamp(year, month + 1, 1); // Maximum
-        while (timestmp_raw < tmp) {
-            showDate(timestmp_raw);
-            timestmp_raw += DAY_SEC; // one day increment
-        }
-    } else if (specifier == "day") {
-        time_t timestmp_raw = dateToStamp(year, month, day);
-        showDate(timestmp_raw);
-    } else if (specifier == "week") {
-        // Calculate minimum range
-        time_t minimum_range = calculateWeek(year, month, day, false);
-        time_t maximum_range = calculateWeek(year, month, day, true);
-        while (minimum_range < maximum_range) {
-            showDate(minimum_range);
-            minimum_range += DAY_SEC;
-        }
-        // Calculate maximum range
-        // iterate.
-    } else {
-    }
-}
-
 /**
  * Calculate Date from timestamp
  * Args: (Ref)year, (Ref)month, (Ref)day, (Ref)wday, timestamp
@@ -140,23 +100,3 @@ bool TimeCalculator::isCorrectDay(int year, int month, int day) {
         return true;
     }
 }
-
-bool TimeCalculator::calcDayCorrection(int year, int month, int day) {
-    // Converted day - will be compared with original y/m/d
-// conv_wday is not-used, but garbage
-    int conv_year, conv_month, conv_day, conv_wday;
-
-    // 1. Convert y/m/d to timestamp
-    time_t original = dateToStamp(year, month, day);
-
-    // 2. Re-Calc y/m/d again
-    calculateDateFromStamp(conv_year, conv_month, conv_day, conv_wday, original);
-
-    // 3. Compare
-    if (conv_day != day) {
-        return false;
-    } else {
-        return true;
-    }
-}
-

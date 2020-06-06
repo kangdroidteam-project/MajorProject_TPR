@@ -1,41 +1,12 @@
 #include "Manager.h"
-#if defined(_WIN64)
 #include <Windows.h>
-#else
-#include <termios.h>
-#endif
 
 Manager::Manager() {
 	// Load saved data to array
 	callLoad();
 }
-#if !defined(_WIN64)
-int _getch() {
-	#if defined(DONT_USE_GETCH)
-	return 10;
-	#else
-    int ch;
-    struct termios old;
-    struct termios current;
 
-    // Get old Standard Input setting
-    tcgetattr(0, &old);
-    // Back up current setting[copy to current]
-    current = old;
-
-    // Modify current Standard input setting[Without echoing char]
-    current.c_lflag &= ~ICANON;
-    current.c_lflag &= ~ECHO;
-
-    tcsetattr(0, TCSANOW, &current);
-    ch = getchar();
-    tcsetattr(0, TCSANOW, &old);
-    return ch;
-	#endif
-}
-#endif
-
-bool Manager::hasNext(string& input) {
+bool Manager::hasNext(string& input) {			
 	for (size_t i = 1; i < input.length(); i++) {
 		if (input.at(i) != 32) {
 			if (input.at(i) > 0) {
@@ -47,7 +18,7 @@ bool Manager::hasNext(string& input) {
 }
 
 void Manager::showDate(time_t rawtime, string scope_info) {
-	unsigned long long index_num = 1;//���� ��ȣ
+	unsigned long long index_num = 1;//일정 번호
 	struct tm* dt;
 	char buffer[50];
 	//time_t rawtime = 0;//std::time(0);
@@ -84,11 +55,6 @@ void Manager::showSchedule() {
 	string d = "";
 	string m = "";
 	int d2, m2, y2;
-	
-	#if defined(TESTCASE_ENABLED)
-	string case_tc[24] = {"안녕 week", ":p month", "sso34 day", "1234567 week", "123456789 month", "213412341232342341234324 day", "0 week", "20380101 month", "19691231 day", "20330455 week", "20400404 week", "20101301 month", "20400488 day", "20339999 month", "40001400 week", "20310101:week", "20001212week", "20000327  week", "20310303 weeke", "19991010 mooooooon", "20201111_tt", "19891030 12334", "20201111 범위!", "1234567890123456789"};
-	int case_counter = 0;
-	#endif
 
 	while (true) {
 		bool flag = true;
@@ -97,14 +63,11 @@ void Manager::showSchedule() {
 		d = "";
 		m = "";
 		scope_whatever = "";
-		#if defined(TESTCASE_ENABLED)
-		#else
 		if (count > 5) {
 			cout << "5 invalid inputs entered. ";
 			custom_pause("Press any key to go back to the main menu.");
 			return;
 		} //
-		#endif
 		cout << "\nInput Format\n";
 		cout << "YYYYMMDD + (Space) + Scope Information (one of, month / week / "
 			"day)\n";
@@ -119,13 +82,8 @@ void Manager::showSchedule() {
 			<< endl;
 		cout << "Enter Date and Scope Information>";
 		string scope;
-		#if defined(TESTCASE_ENABLED)
-		if (case_counter >= 24) return;
-		cout << " " << case_tc[case_counter] << endl;
-		scope = case_tc[case_counter++];
-		#else
 		getline(cin, scope);
-		#endif
+
 		string day_tmp_t = "";
 		int ctr = 0;
 
@@ -208,17 +166,17 @@ void Manager::showSchedule() {
 
 		// got scope at this point.
 		if (flag) {
-			if (scope_whatever != "month" && scope_whatever != "week" && scope_whatever != "day") { // ����5
+			if (scope_whatever != "month" && scope_whatever != "week" && scope_whatever != "day") { // 오류5
 				cout << "Invalid scope information entered." << endl;
 				custom_pause("Please enter again.");
 				continue;
-			} else break;
+			}
 		}
 
 		if (flag) break;
 	}
 
-	//���
+	//출력
 	if (scope_whatever == "month") {
 		time_t timestamp_start = timecal.dateToStamp(y2, m2, 1); // first day of that month
 		time_t timestamp_end = timecal.dateToStamp(y2, m2 + 1, 1); // last day of that month
@@ -246,8 +204,8 @@ void Manager::showSchedule() {
 void Manager::addSchedule() {
 
 	int y2, m2, d2, wd;
-	time_t today = get_date();	// ��¥ �Է�
-	if (today == -1) return; // ��¥ �Է� ����
+	time_t today = get_date();	// 날짜 입력
+	if (today == -1) return; // 날짜 입력 오류
 
 	timecal.calculateDateFromStamp(y2, m2, d2, wd, today);
 
@@ -255,7 +213,7 @@ void Manager::addSchedule() {
 	bool flag;
 	string key = "", sch = "";
 
-	while (true) { // ���� �Է�
+	while (true) { // 일정 입력
 		sch = "";
 		count++;
 		flag = true;
@@ -292,7 +250,7 @@ void Manager::addSchedule() {
 	}
 
 	count = 0;
-	while (true) { //Ű���� �Է�
+	while (true) { //키워드 입력
 		count++;
 		flag = true;
 		key = "";
@@ -317,7 +275,7 @@ void Manager::addSchedule() {
 		}
 
 		if (flag) {
-			for (size_t i = 0; i < key.length(); i++) {
+			for (int i = 0; i < key.length(); i++) {
 				if (!((key.at(i) >= 'a' && key.at(i) <= 'z') || (key.at(i) >= 'A' && key.at(i) <= 'Z') || (key.at(i) >= '0' && key.at(i) <= '9') || (key.at(i) == ' '))) {
 					cout << "Unexpected Characters entered. ";
 					custom_pause("Please enter again.");
@@ -328,13 +286,13 @@ void Manager::addSchedule() {
 		}
 
 		if (flag) break;
-	} //������� Ű����
+	} //여기까지 키워드
 
 
-	//���⼭���� �Է¼��� (2�� ��ȹ��)
-	//1. �ݺ��������� �Է� �߰� (1~4)
-	//2. ������ ���(��/��/�� ���� �Է�) �߰�
-	//3. �ݺ� ���� ��¥ �Է� �߰�
+	//여기서부터 입력수정 (2차 기획서)
+	//1. 반복일정단위 입력 추가 (1~4)
+	//2. 각각의 경우(년/월/일 단위 입력) 추가
+	//3. 반복 종료 날짜 입력 추가
 
 	count = 0;
 	string menu;
@@ -348,7 +306,7 @@ void Manager::addSchedule() {
 		}
 		cout << "1. Every n Year    2. Every n Month   3. Every n Day   4. No Repeat\n>";
 
-		// ���� ó��
+		// 오류 처리
 		getline(cin, menu);
 
 		if (menu.length() < 1) {
@@ -366,11 +324,11 @@ void Manager::addSchedule() {
 			cout << "Argument out of range. Please enter again." << endl;
 			continue;
 		} else if (menu.at(0) == '4') {
-			//�ݺ� ���� ����x
-			time_t timestamp = timecal.dateToStamp(y2, m2, d2);
+			//반복 일정 적용x
+			//time_t timestamp = timecal.dateToStamp(y2, m2, d2);
 
 			Schedule schedule(sch, key, generateSID());
-			schedule.add(timestamp);
+			schedule.add(today);
 			//schedule.setKeyword(key);
 			//schedule.setContent(sch);
 
@@ -382,7 +340,7 @@ void Manager::addSchedule() {
 
 			return;
 
-		} else {  // 1�� 2�� 3��
+		} else {  // 1번 2번 3번
 
 			int repeat = repeatSchedule(timecal.dateToStamp(y2, m2, d2), menu.at(0) - '0');
 			if (repeat == -1) return;
@@ -404,13 +362,13 @@ void Manager::addSchedule() {
 
 void Manager::editSchedule() {
 	int y2, m2, d2, wd; // Year, Month, Day in integer type
-	time_t today = get_date();	// ��¥ �Է�
-	if (today == -1) return; // ��¥ �Է� ����
+	time_t today = get_date();	// 날짜 입력
+	if (today == -1) return; // 날짜 입력 오류
 
 	timecal.calculateDateFromStamp(y2, m2, d2, wd, today);
 	unsigned long long size = 0;
 
-	//���� ������ Ȯ��
+	//일정 없는지 확인
 	for (unsigned long long i = 0; i < date.size(); i++) {
 		if (date.at(i).isDayExists(timecal.dateToStamp(y2, m2, d2))) {
 			size++;
@@ -422,12 +380,12 @@ void Manager::editSchedule() {
 		return;
 	}
 
-
+	
 	Date date_tmp(today, &date);
 
 	int count = 0;
 	bool flag;
-	// unsigned long long date_idx = 0; //date �ε��� ��ȣ
+	// unsigned long long date_idx = 0; //date 인덱스 번호
 	unsigned long long num; // index of schedule
 
 	while (true) {
@@ -582,14 +540,14 @@ void Manager::editSchedule() {
 			}
 		}
 
-		//���� �߰��� �Ȱ��� ����(2����ȹ��)
-		//1. �ݺ��������� �Է� �߰� (1~4)
-		//2. ������ ���(��/��/�� ���� �Է�) �߰�
-		//3. �ݺ� ���� ��¥ �Է� �߰�
+		//일정 추가랑 똑같이 수정(2차기획서)
+		//1. 반복일정단위 입력 추가 (1~4)
+		//2. 각각의 경우(년/월/일 단위 입력) 추가
+		//3. 반복 종료 날짜 입력 추가
 
 
 		count = 0;
-		string repeat;
+		string menu;
 
 
 
@@ -605,37 +563,37 @@ void Manager::editSchedule() {
 			}
 			cout << "1. Every n Year    2. Every n Month   3. Every n Day   4. No Repeat\n>";
 
-			// ���� ó��
-			getline(cin, repeat);
+			// 오류 처리
+			getline(cin, menu);
 
-			if (repeat.length() < 1) {
+			if (menu.length() < 1) {
 				cout << "Only numbers are allowed. Please enter again." << endl; continue;
-			} else if (repeat.at(0) == '0' && hasNext(repeat)) {
+			} else if (menu.at(0) == '0' && hasNext(menu)) {
 				// Prefix 0 detected.
 				cout << "Invalid number format(ex: prefix 0) entered. Please enter again." << endl;
 				continue;
-			} else if (repeat.at(0) < '0' || repeat.at(0) > '9') {
+			} else if (menu.at(0) < '0' || menu.at(0) > '9') {
 				// Only number are allowed
 				cout << "Only numbers are allowed. Please enter again." << endl;
 				continue;
-			} else if (repeat.at(0) < '1' || repeat.at(0) > '4' || repeat.length() > 1) {
+			} else if (menu.at(0) < '1' || menu.at(0) > '4' || menu.length() > 1) {
 				// Number out of range
 				cout << "Argument out of range. Please enter again." << endl;
 				continue;
-			} else if (repeat.at(0) == '4') {
-				//�ݺ� ���� ����x
+			} else if (menu.at(0) == '4') {
+				//반복 일정 적용x
 				time_t timestamp = timecal.dateToStamp(y2, m2, d2);
 
 				Schedule schedule(sch, key, generateSID());
 				schedule.add(timestamp);
 				date_tmp.editSchedule(num, schedule);
 
-				cout << "Schedule sucessfully added. " << endl;
+				//cout << "Schedule sucessfully added. " << endl;
 
-			} else {  // 1�� 2�� 3��
+			} else {  // 1번 2번 3번
 
-				int repeat_ret = repeatSchedule(timecal.dateToStamp(y2, m2, d2), repeat.at(0) - '0');
-				if (repeat_ret == -1) return;
+				int repeat = repeatSchedule(timecal.dateToStamp(y2, m2, d2), menu.at(0) - '0');
+				if (repeat == -1) return;
 
 				time_t fin = input_finishDay();
 				if (fin == -1) return;
@@ -643,7 +601,7 @@ void Manager::editSchedule() {
 				Schedule schedule(sch, key, generateSID());
 				//schedule.setKeyword(key);
 				//schedule.setContent(sch);
-				schedule.setRepeat(timecal.dateToStamp(y2, m2, d2), fin, repeat.at(0) - '0', repeat_ret);
+				schedule.setRepeat(timecal.dateToStamp(y2, m2, d2), fin, menu.at(0) - '0', repeat);
 				date_tmp.editSchedule(num, schedule);
 				//date.push_back(schedule);
 				break;
@@ -700,11 +658,11 @@ void Manager::editSchedule() {
 
 void Manager::deleteSchedule() {
 	int y2, m2, d2, wd;
-	time_t today = get_date();	// ��¥ �Է�
+	time_t today = get_date();	// 날짜 입력
 	timecal.calculateDateFromStamp(y2, m2, d2, wd, today);
-	if (y2 == -1) return; // ��¥ �Է� ����
+	if (y2 == -1) return; // 날짜 입력 오류
 
-	//���� �ִ��� Ȯ��
+	//일정 있는지 확인
 	unsigned long long size = 0;
 	for (unsigned long long i = 0; i < date.size(); i++) {
 		if (date.at(i).isDayExists(timecal.dateToStamp(y2, m2, d2))) {
@@ -723,7 +681,7 @@ void Manager::deleteSchedule() {
 	int count = 0;
 	bool flag = true;
 
-	string sdnum;  //������ ���� ��ȣ
+	string sdnum;  //삭제할 일정 번호
 	unsigned long long* tmp_array_sortable = nullptr;
 	vector<unsigned long long> tmp_vararr;
 	unsigned long long idx_pointer = 0;
@@ -760,7 +718,7 @@ void Manager::deleteSchedule() {
 		break;
 	}
 
-	//���� ����
+	//여기 변경
 	date_tmp.deleteSchedule(tmp_vararr);
 
 	cout << "Schedule successfully deleted. \n";
@@ -791,19 +749,19 @@ bool Manager::parseString(unsigned long long* tmp, unsigned long long& array_idx
 	array_idx_pointer = 0;
 	bool ret_val = false;
 
-	if (input.length() < 1) { // ���� �Է�
+	if (input.length() < 1) { // 엔터 입력
 		// less than 1
 		cout << "Entered character rather than number and space.";
 		custom_pause("Please enter again.");
 		return false;
 	} else if (input.length() < 2 && input.at(0) == ' ') {
-		//�����̽� �ϳ��� �Է����� ���(����)
+		//스페이스 하나만 입력했을 경우(빈문자)
 		cout << "Invalid number format(ex. prefix 0) entered.";
 		custom_pause("Please enter again.");
 		return false;
 	}
-	// ���ڿ� ���Ⱑ �ƴ� ���ڰ� �ִ°�
-	// �̰� input �� ���� ���� �����ؾ� �켱���� 1
+	// 숫자와 띄어쓰기가 아닌 문자가 있는가
+	// 이걸 input 에 대해 먼저 수행해야 우선순위 1
 	for (size_t i = 0; i < input.length(); i++) {
 		if (input.at(i) != ' ' && !((input.at(i) >= '0' && input.at(i) <= '9'))) {
 			cout << "Entered character rather than number and space.";
@@ -812,23 +770,23 @@ bool Manager::parseString(unsigned long long* tmp, unsigned long long& array_idx
 		}
 	}
 
-	input += " "; // Add another space // ��ȣ ������ ���ؼ�
+	input += " "; // Add another space // 번호 구분을 위해서
 
 	if ((input.at(0) == ' ' && input.at(1) != ' ') || (input.at(input.length() - 2) == ' ' && input.at(input.length() - 3) != ' ')) {
-		//�� �� Ȥ�� �� �ڿ� �����̽� �ϳ��� �Է��� ��� (���� ������x)
+		//맨 앞 혹은 맨 뒤에 스페이스 하나를 입력한 경우 (연속 구분자x)
 		cout << "Invalid number format(ex. prefix 0) entered.";
 		custom_pause("Please enter again.");
 		return false;
 	}
 
-	// ������ ���� or 5�� �ʰ��� ��ȣ�� �Է����°� 
-	int count = 0; // � �Է¹޾Ҵ��� (�ܼ��� �����ڷ� ����)
+	// 구분자 연속 or 5개 초과의 번호를 입력했는가 
+	int count = 0; // 몇개 입력받았는지 (단순히 구분자로 나눔)
 	for (size_t i = 0; i < input.length(); i++) {
 		if (input.at(i) == ' ') {
-			// �����ڸ� �������� �Է��ߴ°�
-			if (i < input.length() - 2) {   // �߰��� space �� ���� ������ x
+			// 구분자를 연속으로 입력했는가
+			if (i < input.length() - 2) {   // 추가한 space 는 연속 구분자 x
 				if (input.at((i + 1)) == ' ') {
-					// ���� �����̽�(������ ���� �Է�)
+					// 연속 스페이스(구분자 연속 입력)
 					cout << "consecutive specifier entered. ";
 					custom_pause("Please enter again.");
 					return false;
@@ -848,9 +806,9 @@ bool Manager::parseString(unsigned long long* tmp, unsigned long long& array_idx
 		if (input.at(i) != ' ')
 			tmp_flusher += input.at(i);
 		else {
-			if (tmp_flusher.length() > 2) { // 0 �Է��� ���� ������ ��� ����
+			if (tmp_flusher.length() > 2) { // 0 입력한 경우는 범위를 벗어난 숫자
 				if (tmp_flusher.at(0) == '0') {
-					// �������� �ʴ� ���� (���� 0)
+					// 지원하지 않는 형식 (선행 0)
 					cout << "Invalid number format(ex. prefix 0) entered. ";
 					custom_pause("Please enter again.");
 					ret_val = false;
@@ -869,14 +827,14 @@ bool Manager::parseString(unsigned long long* tmp, unsigned long long& array_idx
 			}
 			if (tmp_value_atoi > 0) {
 				if (tmp_value_atoi > year_idx) {
-					// �������� �ʴ� ����
+					// 존재하지 않는 일정
 					cout << "Selected schedule does not exist.";
 					custom_pause("Please enter again.");
 					ret_val = false;
 					break;
 				}
 			} else {
-				// ������ ��� ���� �Է�
+				// 범위를 벗어난 숫자 입력
 				cout << "Entered schedule number out of range of : 1 ~ " << year_idx << ". ";
 				custom_pause("Please enter again.");
 				ret_val = false;
@@ -920,12 +878,12 @@ int Manager::repeatSchedule(time_t today, int menu) {
 	int c, r;
 	struct tm* tmp_struct = localtime(&today);
 
-	if (menu == 1) c = 2037 - tmp_struct->tm_year - 1900; //year ���
-	else if (menu == 2) c = (2037 - tmp_struct->tm_year - 1900) * 12 + 12 - tmp_struct->tm_mon;  //month ���
-	else if (menu == 3) c = timecal.dateToStamp(2037, 12, 31) - today;  //day ���
+	if (menu == 1) c = 2037 - tmp_struct->tm_year - 1900; //year 계산
+	else if (menu == 2) c = (2037 - tmp_struct->tm_year - 1900) * 12 + 12 - tmp_struct->tm_mon;  //month 계산
+	else if (menu == 3) c = timecal.dateToStamp(2037, 12, 31) - today;  //day 계산
 	else return -1;
 
-	//���� �ݺ� ���� �Է�
+	//일정 반복 범위 입력
 	while (true) {
 		count++;
 		if (count > 5) {
@@ -1006,7 +964,7 @@ time_t Manager::input_finishDay() {
 
 		flag = true;
 		cout << "Please enter the date this schedule ends(8 digits, ex.20200401)\n";
-		cout << "if you don��t want to set  the date then just press only enter key \n";
+		cout << "if you don’t want to set  the date then just press only enter key \n";
 		cout << "it will repeat until 2037.12.31 \n";
 		cout << ">";
 
@@ -1082,7 +1040,7 @@ time_t Manager::input_finishDay() {
 
 time_t Manager::get_date() {
 	int count = 0;
-	string scope, sch, key;
+	string scope;
 	bool flag = true;
 
 	string y = "", d = "", m = "";
