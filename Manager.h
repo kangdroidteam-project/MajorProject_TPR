@@ -14,6 +14,9 @@
 #endif
 #include <vector>
 
+// For automate test
+#include "test.h"
+
 #include "Schedule.h"
 #include "TimeCalculator.h"
 #include "Date.h"

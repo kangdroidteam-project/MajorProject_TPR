@@ -2,6 +2,7 @@
 
 #if !defined(_WIN64)
 int _getch() {
+	#if !defined(IS_TEST_ENABLED)
     int ch;
     struct termios old;
     struct termios current;
@@ -19,6 +20,8 @@ int _getch() {
     ch = getchar();
     tcsetattr(0, TCSANOW, &old);
     return ch;
+	#endif
+	return 1;
 }
 #endif
 
@@ -84,11 +87,13 @@ void Manager::showSchedule() {
 		d = "";
 		m = "";
 		scope_whatever = "";
+		#if !defined(IS_TEST_ENABLED)
 		if (count > 5) {
 			cout << "5 invalid inputs entered. ";
 			custom_pause("Press any key to go back to the main menu.");
 			return;
 		} //
+		#endif
 		cout << "\nInput Format\n";
 		cout << "YYYYMMDD + (Space) + Scope Information (one of, month / week / "
 			"day)\n";
@@ -104,6 +109,9 @@ void Manager::showSchedule() {
 		cout << "Enter Date and Scope Information>";
 		string scope;
 		getline(cin, scope);
+		#if defined(IS_TEST_ENABLED)
+		cout << scope << endl;
+		#endif
 
 		string day_tmp_t = "";
 		int ctr = 0;

@@ -1,5 +1,6 @@
 #include <iostream>
 #include "Manager.h"
+
 #if defined(_WIN64)
 #pragma warning(disable:4996)
 #endif
@@ -30,6 +31,9 @@ int main(void) {
 		cout << "Enter Menu Number >";
 
 		getline(cin, menu);
+		#if defined(IS_TEST_ENABLED)
+		cout << menu << endl;
+		#endif
 
 		if (menu.length() < 1) {
 			cout << "Only numbers are allowed. Please enter again." << endl; continue;
