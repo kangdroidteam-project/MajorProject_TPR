@@ -1,7 +1,8 @@
 #include <iostream>
 #include "Manager.h"
+#if defined(_WIN64)
 #pragma warning(disable:4996)
-
+#endif
 using namespace std;
 
 bool hasNext(string& input) {
