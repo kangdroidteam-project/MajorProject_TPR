@@ -47,7 +47,6 @@ void Schedule::setRepeat(time_t start_timestamp, time_t limit_timestamp, int spe
 
 	if (specifier == 1) { // year
 		while (start_timestamp <= limit_timestamp) {
-			cout << "ST: " << start_timestamp << " ED: " << limit_timestamp << endl;
 			if (tc.isCorrectDay(y, m, d)) {
 				tmp.push_back(start_timestamp);
 			}
@@ -58,7 +57,6 @@ void Schedule::setRepeat(time_t start_timestamp, time_t limit_timestamp, int spe
 		}
 	} else if (specifier == 2) { // month
 		while (start_timestamp <= limit_timestamp) {
-			cout << "ST: " << start_timestamp << " ED: " << limit_timestamp << endl;
 			if (tc.isCorrectDay(y, m, d)) {
 				tmp.push_back(start_timestamp);
 			}
@@ -68,7 +66,6 @@ void Schedule::setRepeat(time_t start_timestamp, time_t limit_timestamp, int spe
 		}
 	} else if (specifier == 3) { // day
 		while (start_timestamp <= limit_timestamp) {
-			cout << "ST: " << start_timestamp << " ED: " << limit_timestamp << endl;
 			tmp.push_back(start_timestamp);
 
 			// Re-Calculate stamp
