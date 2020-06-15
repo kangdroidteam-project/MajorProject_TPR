@@ -373,7 +373,7 @@ void Manager::addSchedule() {
 
 			int repeat = repeatSchedule(timecal.dateToStamp(y2, m2, d2), menu.at(0) - '0');
 			if (repeat == -1) return;
-			time_t fin = input_finishDay();
+			time_t fin = input_finishDay(today);
 			if (fin == -1) return;
 
 			Schedule schedule(sch, key, generateSID());
@@ -611,17 +611,16 @@ void Manager::editSchedule() {
 				continue;
 			} else if (menu.at(0) == '4') {
 				//반복 일정 적용x
-				time_t timestamp = timecal.dateToStamp(y2, m2, d2);
 
 				Schedule schedule(sch, key, generateSID());
-				schedule.add(timestamp);
+				schedule.add(today);
 				date_tmp.editSchedule(num, schedule);
 
 				//cout << "Schedule sucessfully added. " << endl;
 
 			} else {  // 1번 2번 3번
 
-				int repeat = repeatSchedule(timecal.dateToStamp(y2, m2, d2), menu.at(0) - '0');
+				int repeat = repeatSchedule(today, menu.at(0) - '0');
 				if (repeat == -1) return;
 
 				time_t fin = input_finishDay();
@@ -630,7 +629,7 @@ void Manager::editSchedule() {
 				Schedule schedule(sch, key, generateSID());
 				//schedule.setKeyword(key);
 				//schedule.setContent(sch);
-				schedule.setRepeat(timecal.dateToStamp(y2, m2, d2), fin, menu.at(0) - '0', repeat);
+				schedule.setRepeat(today, fin, menu.at(0) - '0', repeat);
 				date_tmp.editSchedule(num, schedule);
 				//date.push_back(schedule);
 				break;
@@ -733,8 +732,7 @@ void Manager::deleteSchedule() {
 		tmp_array_sortable = new unsigned long long[sdnum.length()];
 		idx_pointer = 0;
 
-		bool isParsed = parseString(tmp_array_sortable, idx_pointer, sdnum, date_tmp.GetLengthSid());
-		if (!isParsed) {
+		if (!parseString(tmp_array_sortable, idx_pointer, sdnum, date_tmp.GetLengthSid())) {
 			continue;
 		}
 		// Sort it
@@ -973,7 +971,7 @@ int Manager::repeatSchedule(time_t today, int menu) {
 
 }
 
-time_t Manager::input_finishDay() {
+time_t Manager::input_finishDay(time_t& today) {
 	int count = 0;
 	string scope;
 	string y = "", d = "", m = "";
@@ -1025,7 +1023,7 @@ time_t Manager::input_finishDay() {
 				}
 		}
 
-		
+		if (!flag) continue;
 
 		if (flag) {
 			if (scope.length() != 8) {
@@ -1060,6 +1058,13 @@ time_t Manager::input_finishDay() {
 
 		if (flag) {
 			fin = timecal.dateToStamp(y2, m2, d2);
+			// check if the day is earlier than today
+			if (today > fin) {
+				cout << "Invalid date entered. ";
+				custom_pause("Please enter again.");
+				flag = false;
+				continue;
+			}
 			break;
 		}
 

@@ -54,7 +54,7 @@ public:
 	void removeSame(unsigned long long* arr, unsigned long long& idx, vector<unsigned long long>&tmp);
 	bool isHas(vector<unsigned long long>& tmpVector, unsigned long long target);
 	int repeatSchedule(time_t time,int menu);
-	time_t input_finishDay();
+	time_t input_finishDay(time_t& today);
 	time_t get_date();
 
 	// Generate SID and push to duplication checker container
