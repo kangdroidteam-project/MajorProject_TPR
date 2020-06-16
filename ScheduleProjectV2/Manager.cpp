@@ -31,21 +31,27 @@ void Manager::showDate(time_t rawtime, string scope_info) {
 	
 	//std::cout << std::string(buffer) << std::endl;
 
-	cout << string(buffer) << " " << endl;
+	cout << string(buffer) << " ";
+	if (scope_info == "day")cout << endl;
 
 	// Search needed --> TODO
 	for (unsigned long long i = 0; i < date.size(); i++) {
 		if (date.at(i).isDayExists(rawtime)) {
 			// There is something!
 			if (scope_info == "day") {
-				cout << index_num << ". " << date.at(i).getContent();
+				cout << index_num << ". " << date.at(i).getContent() << endl;
 				index_num++;
-			} else if (scope_info == "week" || scope_info == "month") {
-				cout << " / " << date.at(i).getKeyword();
 			}
-			cout << endl;
+			else if (scope_info == "week" || scope_info == "month") {
+				if (index_num == 1) {
+					cout << date.at(i).getKeyword();
+					index_num = 0;
+				}
+				else cout << " / " << date.at(i).getKeyword();
+			}
 		}
 	}
+	cout << endl;
 }
 
 void Manager::showSchedule() {
@@ -151,7 +157,6 @@ void Manager::showSchedule() {
 
 			//check true date
 			if (!timecal.isCorrectDay(y2, m2, d2)) {
-				cout << y2 << m2 << d2 << endl;
 				cout << "Invalid date entered. ";
 				custom_pause("Please enter again.");
 				flag = false;
@@ -339,7 +344,23 @@ void Manager::addSchedule() {
 
 			return;
 
-		} else {  // 1번 2번 3번
+		}
+		else if (menu.at(0) == '1' && y2 == 2037) {
+			cout << "Cannot be repeated in that period. ";
+			custom_pause("Please enter again.");
+			continue;
+		}
+		else if (menu.at(0) == '2' && y2 == 2037 && m2 == 12) {
+			cout << "Cannot be repeated in that period. ";
+			custom_pause("Please enter again.");
+			continue;
+		}
+		else if (menu.at(0) == '3' && y2 == 2037 && m2 == 12 && d2 == 31) {
+			cout << "Cannot be repeated in that period. ";
+			custom_pause("Please enter again.");
+			continue;
+		}
+		else {  // 1번 2번 3번
 
 			int repeat = repeatSchedule(timecal.dateToStamp(y2, m2, d2), menu.at(0) - '0');
 			if (repeat == -1) return;
@@ -379,9 +400,6 @@ void Manager::editSchedule() {
 		return;
 	}
 
-	
-	Date date_tmp(today, &date);
-
 	int count = 0;
 	bool flag;
 	// unsigned long long date_idx = 0; //date 인덱스 번호
@@ -389,6 +407,8 @@ void Manager::editSchedule() {
 
 	while (true) {
 		string index_num;
+		Date date_tmp(today, &date);
+		count = 0;
 		while (true) {
 			count++;
 
@@ -479,7 +499,7 @@ void Manager::editSchedule() {
 
 			// Length exceeds 50
 			if (sch.length() > 50 || sch.length() < 1) {
-				cout << "Argument out of range. Please enter again. " << endl;
+				cout << "Argument out of range." << endl;
 				custom_pause("Please enter again");
 				continue;
 			}
@@ -548,8 +568,6 @@ void Manager::editSchedule() {
 		count = 0;
 		string menu;
 
-
-
 		while (true) {
 			count++;
 
@@ -585,10 +603,26 @@ void Manager::editSchedule() {
 				Schedule schedule(sch, key, generateSID());
 				schedule.add(today);
 				date_tmp.editSchedule(num, schedule);
-
+				break;
 				//cout << "Schedule sucessfully added. " << endl;
 
-			} else {  // 1번 2번 3번
+			}
+			else if (menu.at(0) == '1' && y2 == 2037) {
+				cout << "Cannot be repeated in that period. ";
+				custom_pause("Please enter again.");
+				continue;
+			}
+			else if (menu.at(0) == '2' && y2 == 2037 && m2 == 12) {
+				cout << "Cannot be repeated in that period. ";
+				custom_pause("Please enter again.");
+				continue;
+			}
+			else if (menu.at(0) == '3' && y2 == 2037 && m2 == 12 && d2 == 31) {
+				cout << "Cannot be repeated in that period. ";
+				custom_pause("Please enter again.");
+				continue;
+			}
+			else {  // 1번 2번 3번
 
 				int repeat = repeatSchedule(today, menu.at(0) - '0');
 				if (repeat == -1) return;
@@ -626,7 +660,6 @@ void Manager::editSchedule() {
 
 			if (roundgo.length() != 1) {
 				cout << "Only (Y,y/N,n) character is allowed. Please enter again." << endl;
-				custom_pause("Please enter again.");
 				lineCheck = false;
 				continue;
 			}
@@ -657,8 +690,8 @@ void Manager::editSchedule() {
 void Manager::deleteSchedule() {
 	int y2, m2, d2, wd;
 	time_t today = get_date();	// 날짜 입력
+	if (today == -1) return; // 날짜 입력 오류		//수정
 	timecal.calculateDateFromStamp(y2, m2, d2, wd, today);
-	if (y2 == -1) return; // 날짜 입력 오류
 
 	//일정 있는지 확인
 	unsigned long long size = 0;
@@ -669,7 +702,8 @@ void Manager::deleteSchedule() {
 	}
 	if (size == 0) {
 		cout << "No schedule available on current date. " << endl;
-		custom_pause("Press any key to go back to the main menu.");
+		cout << "Press any key to return to the main menu." << endl;
+		custom_pause("Press any key to continue...");
 		return;
 	}
 
@@ -876,8 +910,8 @@ int Manager::repeatSchedule(time_t today, int menu) {
 	struct tm* tmp_struct = localtime(&today);
 
 	if (menu == 1) c = 2037 - tmp_struct->tm_year - 1900; //year 계산
-	else if (menu == 2) c = (2037 - tmp_struct->tm_year - 1900) * 12 + 12 - tmp_struct->tm_mon;  //month 계산
-	else if (menu == 3) c = timecal.dateToStamp(2037, 12, 31) - today;  //day 계산
+	else if (menu == 2) c = (2037 - tmp_struct->tm_year - 1900) * 12 + 12 - (tmp_struct->tm_mon+1);  //month 계산
+	else if (menu == 3) c = (timecal.dateToStamp(2037, 12, 31) - today)/86400;  //day 계산
 	else return -1;
 
 	//일정 반복 범위 입력
@@ -894,7 +928,7 @@ int Manager::repeatSchedule(time_t today, int menu) {
 		else if(menu==2) cout << "How many months you want to repeat this schedule?(1~";
 		else if(menu==3) cout << "How many days you want to repeat this schedule?(1~";
 		
-		cout << c << " available)";
+		cout << c << " available)>";
 		getline(cin, repeat);
 
 		if (repeat.length() == 0) { // When nothing entered on string.
@@ -903,7 +937,13 @@ int Manager::repeatSchedule(time_t today, int menu) {
 			continue;
 		}
 
-		for (size_t i = 0; i < repeat.length(); i++) {
+		if (repeat.at(0) <= '0') {
+			cout << "Only numbers are allowed. ";
+			custom_pause("Please enter again.");
+			continue;
+		}
+
+		for (size_t i = 1; i < repeat.length(); i++) {
 			if (repeat.at(i) < '0' || repeat.at(i) > '9') {
 				cout << "Only numbers are allowed. ";
 				custom_pause("Please enter again.");
@@ -921,7 +961,7 @@ int Manager::repeatSchedule(time_t today, int menu) {
 			continue;
 		}
 
-		if (r < 0 || r >c) {
+		if (r <= 0 || r >c) {
 			cout << "Argument out of range. ";
 			custom_pause("Please enter again.");
 			continue;
@@ -1010,10 +1050,12 @@ time_t Manager::input_finishDay(time_t& today) {
 			y2 = stoi(y);
 		}
 		catch (const exception & expn) {
-			cout << "Invalid date entered. ";
-			custom_pause("Please enter again.");
-			flag = false;
-			continue;
+			if(flag){
+				cout << "Invalid date entered. ";
+				custom_pause("Please enter again.");
+				flag = false;
+				continue;
+            }
 		}
 
 		//check true date

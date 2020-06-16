@@ -13,9 +13,16 @@ time_t TimeCalculator::dateToStamp(int year, int month, int day) {
     tm.tm_year = year - 1900;
     tm.tm_mon = month - 1;
     tm.tm_mday = day;
-    tm.tm_hour = 0;
-    tm.tm_min = 0;
-    tm.tm_sec = 0;
+    if (tm.tm_year == 70 && tm.tm_mon == 0 && tm.tm_mday == 1) {
+        tm.tm_hour = 9;
+        tm.tm_min = 0;
+        tm.tm_sec = 0;
+    } else {
+        tm.tm_hour = 0;
+        tm.tm_min = 0;
+        tm.tm_sec = 0;
+    }
+    
     time_t final_tmp = mktime(&tm);
     return final_tmp;
 }
@@ -38,7 +45,12 @@ time_t TimeCalculator::calculateWeek(int year, int month, int day, bool max) {
     tm.tm_sec = 0;
     mktime(&tm); // calculate tm_wday
     if (!max) {
-        tm.tm_mday = tm.tm_mday - tm.tm_wday;
+        if (tm.tm_year == 70 && tm.tm_mon == 0 && tm.tm_mday == 1) {
+            tm.tm_hour = 9;
+            tm.tm_mday = 1;
+        } else {
+            tm.tm_mday = tm.tm_mday - tm.tm_wday;
+        }
     } else {
         tm.tm_mday = tm.tm_mday + (7 - tm.tm_wday);
     }
@@ -55,10 +67,17 @@ time_t TimeCalculator::calculateWeek(int year, int month, int day, bool max) {
 void TimeCalculator::calculateDateFromStamp(int& year, int& month, int& day, int& wday, time_t ts) {
     struct tm* tmp_struct;
     tmp_struct = localtime(&ts);
-    year = tmp_struct->tm_year+1900;
-    month = tmp_struct->tm_mon+1;
-    day = tmp_struct->tm_mday;
-    wday = tmp_struct->tm_wday;
+    if (tmp_struct == NULL) {
+        year = -1;
+        month = -1;
+        day = -1;
+        wday = -1;
+    } else {
+        year = tmp_struct->tm_year + 1900;
+        month = tmp_struct->tm_mon + 1;
+        day = tmp_struct->tm_mday;
+        wday = tmp_struct->tm_wday;
+    }
 }
 
 /**
@@ -70,6 +89,9 @@ void TimeCalculator::calculateDateFromStamp(int& year, int& month, int& day, int
 time_t TimeCalculator::roundOffTimeStamp(time_t ts) {
     struct tm* tmp_struct;
     tmp_struct = localtime(&ts);
+    if (tmp_struct == NULL) {
+        return -1;
+    }
     tmp_struct->tm_hour = 0;
     tmp_struct->tm_min = 0;
     tmp_struct->tm_sec = 0;
@@ -91,6 +113,9 @@ bool TimeCalculator::isCorrectDay(int year, int month, int day) {
     time_t original = dateToStamp(year, month, day);
 
     // 2. Re-Calc y/m/d again
+    if (original == -1) {
+        return false;
+    }
     calculateDateFromStamp(conv_year, conv_month, conv_day, conv_wday, original);
 
     // 3. Compare
